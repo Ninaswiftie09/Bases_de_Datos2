@@ -130,11 +130,7 @@ db.accounts.aggregate([
 db.transactions.aggregate([
   {
     $match: {
-      transaction_date: {
-        $gte: {
-          $dateSubtract: { startDate: "$$NOW", unit: "month", amount: 6 }
-        }
-      }
+      date: { $gte: new Date(new Date().setMonth(new Date().getMonth() - 6)) }
     }
   },
   { $sort: { amount: -1 } },
@@ -169,7 +165,7 @@ db.transactions.aggregate([
   {
     $project: {
       _id: 0,
-      transaction_date: 1,
+      date: 1,
       amount: 1,
       transaction_code: 1,
       symbol: 1,
@@ -192,7 +188,7 @@ db.transactions.aggregate([
     }
   },
   { $unwind: "$acc" },
-  { $sort: { "acc.customer_id": 1, transaction_date: 1 } },
+  { $sort: { "acc.customer_id": 1, date: 1 } },
   {
     $group: {
       _id: "$acc.customer_id",
