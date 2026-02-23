@@ -1,6 +1,5 @@
-## Bases de Datos 2
-Este repositorio es para todo el curso de Bases de Datos II, lo estamos manejando por branches así que para ver la activiad que se desee calificar, se puede ver en su branch respectiva.
-
-Nota: Por favor, no modificar esta rama, ya que es únicamente informativa.
-
-![alt text](image.png)
+## Laboratorio 3
+### Integrantes
+    - Nina Nájera Marakovits - 231088 
+    - María José Yee - 231193 
+    - Nelson Escalante - 22046 
