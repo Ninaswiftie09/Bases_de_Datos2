@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: laboratorio4
+      POSTGRES_USER: nina
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  nifi:
+    image: apache/nifi:latest
+    container_name: nifi
+    ports:
+      - "8443:8443"
+    environment:
+      SINGLE_USER_CREDENTIALS_USERNAME: admin
+      SINGLE_USER_CREDENTIALS_PASSWORD: Admin12345Admin12345
+    depends_on:
+      - db
+    volumes:
+      - ./drivers:/opt/nifi/nifi-current/drivers
+
+volumes:
+  postgres_data:
