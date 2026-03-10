@@ -1,0 +1,95 @@
+/* estilos generales */
+:root {
+  --queso: #f8d141;        /* amarillo queso */
+  --pepperoni: #d93a2e;    /* rojo pepperoni */
+  --masa: #f4d8ae;         /* dorado masa */
+  --albahaca: #3b7d3f;     /* verde albahaca */
+  --salsa: #c22b1c;        /* rojo salsa */
+  --fondo: #fffaf0;        /* fondo claro */
+  --texto: #3a2d20;
+  --sombra: rgba(0, 0, 0, 0.12);
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, var(--fondo), #fff2df);
+  color: var(--texto);
+}
+
+.pizzeria {
+  max-width: 960px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px var(--sombra);
+  border: 2px solid #fbce8f;
+  overflow: hidden;
+}
+
+.pizza-encabezado {
+  background: linear-gradient(90deg, var(--queso), #f0ba2d);
+  color: #402602;
+  padding: 1.2rem;
+  font-size: 1.7rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.pizza-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 1.2rem;
+}
+
+.pizza-card {
+  border: 1px solid #f2c572;
+  border-radius: 10px;
+  background: #fff8e3;
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.07);
+  padding: 1rem;
+}
+
+.pizza-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.pizza-clasico { border-left: 5px solid var(--pepperoni); }
+.pizza-queso   { border-left: 5px solid var(--queso); }
+.pizza-vegetal { border-left: 5px solid var(--albahaca); }
+
+.pizza-topping {
+  display: inline-block;
+  font-size: 0.88rem;
+  margin-right: 0.4rem;
+  margin-bottom: 0.4rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  color: #fff;
+}
+
+.topping-queso    { background: var(--queso); color: #c69e40; }
+.topping-pepperoni { background: var(--pepperoni); }
+.topping-basilico { background: var(--albahaca); }
+.topping-masa     { background: var(--masa); color: #d8ae72; }
+
+.boton-orden {
+  display: inline-block;
+  margin-top: 0.85rem;
+  padding: 0.58rem 1rem;
+  border: 0;
+  border-radius: 45px;
+  background: linear-gradient(135deg, var(--pepperoni), #b00020);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.boton-orden:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 9px 16px rgba(0, 0, 0, 0.2);
+}
