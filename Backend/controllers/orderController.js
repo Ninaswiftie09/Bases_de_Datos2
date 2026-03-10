@@ -6,13 +6,26 @@ exports.getAllOrders = async (req, res) => {
     const features = new QueryFeatures(Order.find(), req.query)
       .filter()
       .sort()
-      .limitFields()
       .paginate();
 
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      features.query = features.query.select(fields);
+    }
+
     const orders = await features.query
-      .populate("user_id")
-      .populate("restaurant_id")
-      .populate("items.menu_item_id");
+      .populate({
+        path: "user_id",
+        select: "name email"
+      })
+      .populate({
+        path: "restaurant_id",
+        select: "name category"
+      })
+      .populate({
+        path: "items.menu_item_id",
+        select: "name price"
+      });
 
     res.status(200).json({
       status: "success",

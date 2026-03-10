@@ -4,14 +4,14 @@ class QueryFeatures {
     this.queryString = queryString;
   }
 
-  filter() {
+    filter() {
     const queryObj = { ...this.queryString };
     const excludedFields = ["sort", "limit", "page", "fields"];
     excludedFields.forEach(el => delete queryObj[el]);
 
-    this.query = this.query.find(queryObj);
+    this.query = this.query.where(queryObj);
     return this;
-  }
+    }
 
   sort() {
     if (this.queryString.sort) {
