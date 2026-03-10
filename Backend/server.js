@@ -9,6 +9,8 @@ const menuItemRoutes = require("./routes/menuItemRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 
+const reportRoutes = require("./routes/reportRoutes");
+
 const app = express();
 
 const PORT = process.env.PORT || 8000;
@@ -34,6 +36,8 @@ app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/menu-items", menuItemRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
+
+app.use("/api/reports", reportRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });

@@ -37,4 +37,6 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+reviewSchema.index({ restaurant_id: 1, rating: -1 });
+
 module.exports = mongoose.model("Review", reviewSchema);
