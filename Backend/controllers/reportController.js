@@ -1,6 +1,5 @@
 const Order = require("../models/Order");
 const Review = require("../models/Review");
-const Restaurant = require("../models/Restaurant");
 
 exports.topRestaurants = async (req, res) => {
   try {
@@ -13,18 +12,10 @@ exports.topRestaurants = async (req, res) => {
         }
       },
       { $sort: { avgRating: -1 } },
-      { $limit: 5 },
-      {
-        $lookup: {
-          from: "restaurants",
-          localField: "_id",
-          foreignField: "_id",
-          as: "restaurant"
-        }
-      }
+      { $limit: 5 }
     ]);
 
-    res.status(200).json(result);
+    res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -41,18 +32,10 @@ exports.topDishes = async (req, res) => {
         }
       },
       { $sort: { totalSold: -1 } },
-      { $limit: 5 },
-      {
-        $lookup: {
-          from: "menuitems",
-          localField: "_id",
-          foreignField: "_id",
-          as: "dish"
-        }
-      }
+      { $limit: 5 }
     ]);
 
-    res.status(200).json(result);
+    res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -69,7 +52,7 @@ exports.ordersByStatus = async (req, res) => {
       }
     ]);
 
-    res.status(200).json(result);
+    res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

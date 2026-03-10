@@ -1,11 +1,7 @@
-const createCrudController = require("./crudFactory");
 const Order = require("../models/Order");
 const QueryFeatures = require("../utils/queryFeatures");
 
-module.exports = createCrudController(Order);
-
-
-exports.getAllOrdersAdvanced = async (req, res) => {
+exports.getAllOrders = async (req, res) => {
   try {
     const features = new QueryFeatures(Order.find(), req.query)
       .filter()

@@ -1,4 +1,8 @@
-const createCrudRouter = require("./createCrudRouter");
+const express = require("express");
 const orderController = require("../controllers/orderController");
 
-module.exports = createCrudRouter(orderController);
+const router = express.Router();
+
+router.get("/", orderController.getAllOrders);
+
+module.exports = router;
