@@ -5,7 +5,7 @@
 
     <div class="home__content">
       <div class="home__hero">
-        <h1>Panel de Pizzería TriData</h1>
+        <h1>Panel de Restaurante TriData</h1>
         <p>
           Bienvenido al sistema. Seleccione la sección que desea administrar.
         </p>
