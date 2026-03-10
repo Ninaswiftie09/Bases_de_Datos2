@@ -64,4 +64,6 @@ const restaurantSchema = new mongoose.Schema(
   }
 );
 
+restaurantSchema.index({ name: "text", category: "text" });
+
 module.exports = mongoose.model("Restaurant", restaurantSchema);
