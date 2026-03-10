@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: proyecto_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    volumes:
+      - mongo_data:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: proyecto_mongo_express
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin123
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH: "false"
+
+  backend:
+    build: ./Backend
+    container_name: proyecto_backend
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      MONGO_URI: mongodb://admin:admin123@mongo:27017/?authSource=admin
+      DB_NAME: proyecto01
+    volumes:
+      - ./Backend:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./Frontend
+    container_name: proyecto_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+
+volumes:
+  mongo_data:
