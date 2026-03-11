@@ -19,8 +19,11 @@ const MONGO_URI =
   "mongodb://admin:admin123@mongo:27017/?authSource=admin";
 const DB_NAME = process.env.DB_NAME || "proyecto01";
 
+const fileRoutes = require("./routes/fileRoutes");
+
 app.use(cors());
 app.use(express.json());
+app.use("/api/files", fileRoutes);
 
 app.get("/api/health", async (req, res) => {
   res.json({
