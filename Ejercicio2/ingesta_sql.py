@@ -7,10 +7,11 @@ connection_url = URL.create(
     username="nina",
     password="1234",
     host="127.0.0.1",
-    port=5432,
+    port=5433,
     database="laboratorio4",
 )
 
+print(connection_url)
 engine = create_engine(connection_url)
 
 df_costos = pd.read_sql("SELECT * FROM pais_costos;", engine)
