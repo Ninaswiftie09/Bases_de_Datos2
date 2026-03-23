@@ -110,3 +110,15 @@ SET a:American;
 
 MATCH (s:Song {popularity: 'High'})
 SET s:Hit;
+
+-- PARTE 4 ELIMINACION DE LABELS
+MATCH (s:Song)
+REMOVE s:Hit;
+
+-- PARTE 5 ADICION DE PROPIEDADES
+MATCH (a:Artist {name: 'Ed Sheeran'})
+SET a.followers = 100000000;
+
+-- PARTE 6 - ELIMINACION DE PROPIEDADES
+MATCH (a:Artist {name: 'Ed Sheeran'})
+REMOVE a.followers;
