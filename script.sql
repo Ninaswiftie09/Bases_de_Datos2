@@ -107,3 +107,6 @@ SET a:British;
 
 MATCH (a:Artist {country: 'USA'})
 SET a:American;
+
+MATCH (s:Song {popularity: 'High'})
+SET s:Hit;
