@@ -1,0 +1,1 @@
+-- acá van todas las consultas SQL que se harán a la base de datos.
