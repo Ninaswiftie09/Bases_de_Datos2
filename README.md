@@ -1,4 +1,4 @@
-## Laboratorio 5
+## Laboratorio 6
 ### Integrantes
     - Nina Nájera Marakovits - 231088 
     - María José Yee - 231193 
