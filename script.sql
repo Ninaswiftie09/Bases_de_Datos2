@@ -45,3 +45,32 @@ MERGE (p:Person {name: 'Emily Blunt'})
 MERGE (m:Movie {title: 'A Quiet Place'})
 MERGE (p)-[:ACTED_IN]->(m)
 RETURN p, m
+
+-- Ejercicio 3: Consultar datos
+
+-- 3.1: Crear una relación ACTED_IN entre Michael Caine y dicha película en cuya relación Michael Caine tuvo el rol de Alfred Penny.
+MERGE (p:Person {name: 'Michael Caine'})
+MERGE (m:Movie {title: 'Batman Begins'})
+MERGE (p)-[r:ACTED_IN]->(m)
+SET r.roles = ['Alfred Penny']
+RETURN p, r, m
+
+-- 3.2: Agregue el rol a la relación entre Michael Caine y The Dark Knight.
+
+MATCH (p:Person {name: 'Michael Caine'})
+MATCH (m:Movie {title: 'The Dark Knight'})
+MERGE (p)-[r:ACTED_IN]->(m)
+SET r.roles = ['Alfred Penny']
+RETURN p, r, m
+
+-- 3.3: Actualice también dicha relación para la misma película y el mismo actor agregando que el año de esa actuación fue en 2008.
+
+MATCH (p:Person {name: 'Michael Caine'})-[r:ACTED_IN]->(m:Movie {title: 'The Dark Knight'})
+SET r.year = 2008
+RETURN p, r, m
+
+-- 3.4: Elimine el rol de Michael Caine con la película The Dark Knight utilizando la función REMOVE.
+
+MATCH (p:Person {name: 'Michael Caine'})-[r:ACTED_IN]->(m:Movie {title: 'The Dark Knight'})
+REMOVE r.roles
+RETURN p, r, m
