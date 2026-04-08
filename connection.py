@@ -9,7 +9,7 @@ driver = GraphDatabase.driver(uri, auth=(username, password))
 def close_driver():
     driver.close()
 
-# Example to run a query
+
 with driver.session() as session:
     result = session.run("MATCH (n) RETURN n LIMIT 5")
     for record in result:
