@@ -1,18 +1,15 @@
+import os
+import dotenv
 from neo4j import GraphDatabase
 
-uri = "neo4j+s://a00b17cd.databases.neo4j.io"  
-username = "neo4j"       
-password = "eaeAtUZmYcjJ16jN2_uTQ4gIaOCq1GvbmFLlQYcfj1o"       
-
-driver = GraphDatabase.driver(uri, auth=(username, password))
-
-def close_driver():
-    driver.close()
+load_status = dotenv.load_dotenv("Neo4j-a00b17cd-Created-2026-04-08.txt")
+if load_status is False:
+    raise RuntimeError('Environment variables not loaded.')
 
 
-with driver.session() as session:
-    result = session.run("MATCH (n) RETURN n LIMIT 5")
-    for record in result:
-        print(record)
+URI = os.getenv("NEO4J_URI")
+AUTH = (os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD"))
 
-close_driver()
+with GraphDatabase.driver(URI, auth=AUTH) as driver:
+    driver.verify_connectivity()
+    print("Connection established.")
