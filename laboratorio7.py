@@ -1,112 +1,184 @@
 from connection import get_driver
+import time
 
 
-# funcion para crear una persona
-def crear_persona(tx, name, born):
+def crear_usuario(tx, name, user_id):
     tx.run(
         """
-        MERGE (p:Person {name: $name})
-        SET p.born = $born
+        MERGE (u:User {userId: $user_id})
+        SET u.name = $name
         """,
         name=name,
-        born=born
+        user_id=user_id
     )
 
 
-# funcion para crear una pelicula
-def crear_pelicula(tx, title, released, tagline):
+def crear_pelicula(tx, title, movie_id, year, plot):
     tx.run(
         """
-        MERGE (m:Movie {title: $title})
-        SET m.released = $released,
-            m.tagline = $tagline
+        MERGE (m:Movie {movieId: $movie_id})
+        SET m.title  = $title,
+            m.year   = $year,
+            m.plot   = $plot
         """,
         title=title,
-        released=released,
-        tagline=tagline
+        movie_id=movie_id,
+        year=year,
+        plot=plot
     )
 
 
-# funcion para crear una relacion reviewd
-def crear_review(tx, person_name, movie_title, rating, summary):
+def crear_rated(tx, user_id, movie_id, rating, timestamp):
     tx.run(
         """
-        MATCH (p:Person {name: $person_name})
-        MATCH (m:Movie {title: $movie_title})
-        MERGE (p)-[r:REVIEWED]->(m)
-        SET r.rating = $rating,
-            r.summary = $summary
+        MATCH (u:User  {userId:  $user_id})
+        MATCH (m:Movie {movieId: $movie_id})
+        MERGE (u)-[r:RATED]->(m)
+        SET r.rating    = $rating,
+            r.timestamp = $timestamp
         """,
-        person_name=person_name,
-        movie_title=movie_title,
+        user_id=user_id,
+        movie_id=movie_id,
         rating=rating,
-        summary=summary
+        timestamp=timestamp
     )
 
 
-# funcion para insertar datos
 def llenar_datos(session):
-    personas = [
-        {"name": "Lab User 1", "born": 2003},
-        {"name": "Lab User 2", "born": 2004},
-        {"name": "Lab User 3", "born": 2002},
+    usuarios = [
+        {"name": "Alice García",   "user_id": "U001"},
+        {"name": "Bob Martínez",   "user_id": "U002"},
+        {"name": "Carlos López",   "user_id": "U003"},
+        {"name": "Diana Pérez",    "user_id": "U004"},
+        {"name": "Eduardo Ramírez","user_id": "U005"},
     ]
 
     peliculas = [
-        {"title": "Lab Movie 1", "released": 2024, "tagline": "Movie created for the lab"},
-        {"title": "Lab Movie 2", "released": 2023, "tagline": "Second movie created for the lab"},
-        {"title": "Lab Movie 3", "released": 2022, "tagline": "Third movie created for the lab"},
-        {"title": "Lab Movie 4", "released": 2021, "tagline": "Fourth movie created for the lab"},
+        {"title": "Inception",       "movie_id": 1, "year": 2010, "plot": "A thief who steals corporate secrets through dream-sharing technology."},
+        {"title": "The Matrix",      "movie_id": 2, "year": 1999, "plot": "A hacker discovers the world is a simulation."},
+        {"title": "Interstellar",    "movie_id": 3, "year": 2014, "plot": "Astronauts travel through a wormhole near Saturn."},
+        {"title": "The Dark Knight", "movie_id": 4, "year": 2008, "plot": "Batman faces the Joker in Gotham City."},
+        {"title": "Parasite",        "movie_id": 5, "year": 2019, "plot": "A poor family schemes to become employed by a wealthy family."},
     ]
 
-    reviews = [
-        {"person_name": "Lab User 1", "movie_title": "Lab Movie 1", "rating": 5, "summary": "Muy buena pelicula."},
-        {"person_name": "Lab User 1", "movie_title": "Lab Movie 2", "rating": 4, "summary": "Me gusto bastante."},
-        {"person_name": "Lab User 2", "movie_title": "Lab Movie 2", "rating": 5, "summary": "La recomendaria."},
-        {"person_name": "Lab User 2", "movie_title": "Lab Movie 3", "rating": 3, "summary": "Esta bien, pero pudo ser mejor."},
-        {"person_name": "Lab User 3", "movie_title": "Lab Movie 1", "rating": 4, "summary": "Buena historia."},
-        {"person_name": "Lab User 3", "movie_title": "Lab Movie 4", "rating": 5, "summary": "Fue la que mas me gusto."},
+    # Cada usuario califica al menos 2 películas
+    rated = [
+        {"user_id": "U001", "movie_id": 1, "rating": 5, "timestamp": int(time.time()) - 500},
+        {"user_id": "U001", "movie_id": 3, "rating": 4, "timestamp": int(time.time()) - 400},
+        {"user_id": "U002", "movie_id": 2, "rating": 5, "timestamp": int(time.time()) - 300},
+        {"user_id": "U002", "movie_id": 4, "rating": 3, "timestamp": int(time.time()) - 200},
+        {"user_id": "U003", "movie_id": 1, "rating": 4, "timestamp": int(time.time()) - 150},
+        {"user_id": "U003", "movie_id": 5, "rating": 5, "timestamp": int(time.time()) - 100},
+        {"user_id": "U004", "movie_id": 2, "rating": 3, "timestamp": int(time.time()) - 90},
+        {"user_id": "U004", "movie_id": 3, "rating": 5, "timestamp": int(time.time()) - 80},
+        {"user_id": "U005", "movie_id": 4, "rating": 4, "timestamp": int(time.time()) - 70},
+        {"user_id": "U005", "movie_id": 5, "rating": 5, "timestamp": int(time.time()) - 60},
     ]
 
-    for persona in personas:
-        session.execute_write(crear_persona, **persona)
+    for u in usuarios:
+        session.execute_write(crear_usuario, **u)
 
-    for pelicula in peliculas:
-        session.execute_write(crear_pelicula, **pelicula)
+    for p in peliculas:
+        session.execute_write(crear_pelicula, **p)
 
-    for review in reviews:
-        session.execute_write(crear_review, **review)
+    for r in rated:
+        session.execute_write(crear_rated, **r)
+
+    print("Datos insertados correctamente.")
 
 
-# funcion para mostrar resultados
-def mostrar_reviews(session):
+def buscar_usuario(session, user_id):
+    """Busca y retorna un usuario por su userId."""
     result = session.run(
         """
-        MATCH (p:Person)-[r:REVIEWED]->(m:Movie)
-        WHERE p.name STARTS WITH 'Lab User'
-        RETURN p.name AS persona, m.title AS pelicula, r.rating AS rating, r.summary AS resumen
-        ORDER BY persona, pelicula
+        MATCH (u:User {userId: $user_id})
+        RETURN u.name AS nombre, u.userId AS id
+        """,
+        user_id=user_id
+    )
+    record = result.single()
+    if record:
+        print(f"\nUsuario encontrado -> nombre: {record['nombre']} | id: {record['id']}")
+    else:
+        print(f"\nNo se encontro el usuario con id: {user_id}")
+    return record
+
+
+def buscar_pelicula(session, movie_id):
+    """Busca y retorna una película por su movieId."""
+    result = session.run(
+        """
+        MATCH (m:Movie {movieId: $movie_id})
+        RETURN m.title AS titulo, m.year AS año, m.plot AS sinopsis
+        """,
+        movie_id=movie_id
+    )
+    record = result.single()
+    if record:
+        print(f"\nPelicula encontrada -> titulo: {record['titulo']} | año: {record['año']}")
+        print(f"   Sinopsis: {record['sinopsis']}")
+    else:
+        print(f"\nNo se encontro la pelicula con id: {movie_id}")
+    return record
+
+
+def buscar_usuario_con_ratings(session, user_id):
+    """Busca un usuario junto con todas sus relaciones RATED hacia películas."""
+    result = session.run(
+        """
+        MATCH (u:User {userId: $user_id})-[r:RATED]->(m:Movie)
+        RETURN u.name AS usuario, m.title AS pelicula,
+               r.rating AS rating, r.timestamp AS timestamp
+        ORDER BY r.rating DESC
+        """,
+        user_id=user_id
+    )
+    records = result.data()
+    if records:
+        print(f"\nRatings del usuario '{records[0]['usuario']}':")
+        for rec in records:
+            print(f"   -> {rec['pelicula']} | rating: {rec['rating']} | timestamp: {rec['timestamp']}")
+    else:
+        print(f"\nNo se encontraron ratings para el usuario: {user_id}")
+    return records
+
+
+def mostrar_todos_los_ratings(session):
+    result = session.run(
+        """
+        MATCH (u:User)-[r:RATED]->(m:Movie)
+        RETURN u.name AS usuario, m.title AS pelicula,
+               r.rating AS rating, r.timestamp AS timestamp
+        ORDER BY usuario, pelicula
         """
     )
-
-    print("\nDatos insertados:\n")
+    print("\nTodos los ratings en el grafo:\n")
     for record in result:
         print(
-            f"{record['persona']} -> {record['pelicula']} | "
-            f"rating: {record['rating']} | "
-            f"summary: {record['resumen']}"
+            f"  {record['usuario']} → {record['pelicula']} | "
+            f"rating: {record['rating']} | timestamp: {record['timestamp']}"
         )
 
 
-# funcion principal
 def main():
     with get_driver() as driver:
         driver.verify_connectivity()
-        print("Connection established.")
+        print("Conexion establecida.")
 
         with driver.session() as session:
+
+            # Inciso 2
             llenar_datos(session)
-            mostrar_reviews(session)
+            mostrar_todos_los_ratings(session)
+
+            # Inciso 3
+            print("\n" + "="*55)
+            print("INCISO 3 - Funciones de busqueda")
+            print("="*55)
+
+            buscar_usuario(session, "U001")
+            buscar_pelicula(session, 2)
+            buscar_usuario_con_ratings(session, "U003")
 
 
 if __name__ == "__main__":
