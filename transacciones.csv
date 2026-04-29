@@ -1,0 +1,30 @@
+cliente_nombre,cliente_tipo,cuenta_numero,banco,tx_id,tx_monto,tx_fecha,tx_tipo
+Carlos Mendez,Natural,001-GTQ,Banrural,TX001,15000,2026-03-01,transferencia
+Carlos Mendez,Natural,001-GTQ,Banrural,TX002,22000,2026-03-05,transferencia
+Carlos Mendez,Natural,001-GTQ,Banrural,TX003,18000,2026-03-10,transferencia
+Carlos Mendez,Natural,001-GTQ,Banrural,TX004,25000,2026-03-15,transferencia
+Carlos Mendez,Natural,001-GTQ,Banrural,TX005,12000,2026-03-20,transferencia
+
+Ana Torres,Natural,002-GTQ,G&T,TX006,800,2026-03-01,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX007,900,2026-03-02,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX008,700,2026-03-03,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX009,850,2026-03-04,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX010,950,2026-03-05,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX011,780,2026-03-06,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX012,820,2026-03-07,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX013,870,2026-03-08,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX014,920,2026-03-09,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX015,880,2026-03-10,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX016,910,2026-03-11,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX017,870,2026-03-12,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX018,890,2026-03-13,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX019,860,2026-03-14,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX020,910,2026-03-15,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX021,870,2026-03-16,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX022,880,2026-03-17,transferencia
+Ana Torres,Natural,002-GTQ,G&T,TX023,900,2026-03-18,transferencia
+
+Luis Fuentes,Natural,003-GTQ,BAC,TX024,85000,2026-03-05,transferencia
+Luis Fuentes,Natural,003-GTQ,BAC,TX025,500,2026-03-07,transferencia
+Luis Fuentes,Natural,003-GTQ,BAC,TX026,700,2026-03-10,transferencia
+Luis Fuentes,Natural,003-GTQ,BAC,TX027,600,2026-03-12,transferencia
