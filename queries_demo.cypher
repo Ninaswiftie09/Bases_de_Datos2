@@ -34,7 +34,7 @@
 // El archivo transacciones.csv debe estar en la carpeta import de Neo4j.
 // =======================================================
 
-LOAD CSV WITH HEADERS FROM 'file:///transacciones.csv' AS row
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/Ninaswiftie09/Bases_de_Datos2/refs/heads/Laboratorio8/transacciones.csv' AS row
 MERGE (c:Cliente {nombre: row.cliente_nombre})
 SET c.tipo = row.cliente_tipo
 MERGE (cu:Cuenta {numero: row.cuenta_numero})
