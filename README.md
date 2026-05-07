@@ -243,24 +243,3 @@ Bases_de_Datos2/
 └── README.md
 ```
 
-## Notas de presentación
-
-Para la demostración, se recomienda mostrar el sistema en este orden:
-
-1. Inicio: creación de constraints y carga del CSV oficial.
-2. Inicio: conteo de nodos y relaciones.
-3. Nodos: creación de un nodo con una etiqueta y otro con más de una etiqueta.
-4. Nodos: actualización y eliminación de propiedades.
-5. Relaciones: creación de una relación con propiedades.
-6. Relaciones: actualización y eliminación de relaciones.
-7. Alertas: ejecución de consultas Cypher.
-8. Alertas: score de riesgo.
-9. Grafo: visualización de nodos y relaciones.
-
-## Consideraciones
-
-Si el backend responde con error de autenticación, revise las credenciales del archivo `.env`.
-
-Si el backend responde que no encuentra la base de datos, verifique que `NEO4J_DATABASE` tenga el valor `neo4j`.
-
-Si el frontend no logra comunicarse con el backend, verifique que el backend esté activo en `http://localhost:8000` y que el frontend esté corriendo en `http://localhost:3000`.
