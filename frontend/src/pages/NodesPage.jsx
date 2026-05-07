@@ -4,7 +4,7 @@ import DataTable from '../components/DataTable.jsx'
 import JsonBox from '../components/JsonBox.jsx'
 import Status from '../components/Status.jsx'
 
-const defaultNode = JSON.stringify({
+const defaultProps = JSON.stringify({
   id_usuario: 'USU_MANUAL_001',
   nombre: 'Usuario Manual',
   edad: 30,
@@ -15,7 +15,7 @@ const defaultNode = JSON.stringify({
 
 export default function NodesPage() {
   const [labels, setLabels] = useState('Usuario')
-  const [properties, setProperties] = useState(defaultNode)
+  const [properties, setProperties] = useState(defaultProps)
   const [searchLabel, setSearchLabel] = useState('Usuario')
   const [matchProperty, setMatchProperty] = useState('id_usuario')
   const [matchValue, setMatchValue] = useState('')
@@ -24,155 +24,126 @@ export default function NodesPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
-  const [updateProps, setUpdateProps] = useState(JSON.stringify({ revisado: true, comentario: 'Actualizado desde interfaz' }, null, 2))
+  const [updateProps, setUpdateProps] = useState(JSON.stringify({ revisado: true, comentario: 'Actualizado' }, null, 2))
   const [deleteProps, setDeleteProps] = useState('comentario')
 
   function parseJson(text) {
     try { return JSON.parse(text || '{}') }
-    catch { throw new Error('El JSON de propiedades no es válido.') }
+    catch { throw new Error('JSON no válido.') }
   }
 
-  async function run(action, success = 'Operación realizada correctamente.') {
+  async function run(action, success) {
     setLoading(true); setError(''); setMessage(''); setResult(null)
     try {
       const { data } = await action()
-      setResult(data)
-      setMessage(success)
-    } catch (err) {
-      setError(formatError(err))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function createNode() {
-    const payload = { labels: labels.split(',').map(x => x.trim()).filter(Boolean), properties: parseJson(properties) }
-    await run(() => api.post('/nodes', payload), 'Nodo creado correctamente.')
+      setResult(data); setMessage(success)
+    } catch (err) { setError(formatError(err)) }
+    finally { setLoading(false) }
   }
 
   async function searchNodes() {
     setLoading(true); setError(''); setMessage('')
     try {
       const params = { limit: 100 }
-      if (matchProperty && matchValue) {
-        params.match_property = matchProperty
-        params.match_value = matchValue
-      }
+      if (matchProperty && matchValue) { params.match_property = matchProperty; params.match_value = matchValue }
       const { data } = await api.get(`/nodes/${searchLabel}`, { params })
-      setRows(data)
-      setMessage('Consulta realizada correctamente.')
-    } catch (err) {
-      setError(formatError(err))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function updateNode() {
-    await run(() => api.patch('/nodes', {
-      label: searchLabel,
-      match_property: matchProperty,
-      match_value: matchValue,
-      properties: parseJson(updateProps),
-    }), 'Propiedades actualizadas.')
-  }
-
-  async function deleteNodeProperties() {
-    await run(() => api.delete('/nodes/properties', { data: {
-      label: searchLabel,
-      match_property: matchProperty,
-      match_value: matchValue,
-      property_names: deleteProps.split(',').map(x => x.trim()).filter(Boolean),
-    }}), 'Propiedades eliminadas.')
-  }
-
-  async function deleteNode() {
-    await run(() => api.delete('/nodes', { data: {
-      label: searchLabel,
-      match_property: matchProperty,
-      match_value: matchValue,
-    }}), 'Nodo eliminado.')
-  }
-
-  async function bulkUpdate() {
-    await run(() => api.patch('/nodes/bulk', {
-      label: searchLabel,
-      match_property: matchProperty || null,
-      match_value: matchValue || null,
-      properties: parseJson(updateProps),
-      limit: 25,
-    }), 'Actualización múltiple realizada.')
-  }
-
-  async function bulkDeleteProperties() {
-    await run(() => api.delete('/nodes/bulk/properties', { data: {
-      label: searchLabel,
-      match_property: matchProperty || null,
-      match_value: matchValue || null,
-      property_names: deleteProps.split(',').map(x => x.trim()).filter(Boolean),
-      limit: 25,
-    }}), 'Eliminación múltiple de propiedades realizada.')
+      setRows(data); setMessage('Consulta realizada.')
+    } catch (err) { setError(formatError(err)) }
+    finally { setLoading(false) }
   }
 
   return (
     <section>
       <div className="page-header">
         <div>
-          <p className="eyebrow">CRUD de nodos</p>
-          <h2>Gestión de nodos y propiedades</h2>
-          <p>Cree nodos con una o varias labels, consulte registros y modifique propiedades individuales o múltiples.</p>
+          <p className="eyebrow">CRUD · Nodos</p>
+          <h2>Gestión de nodos</h2>
+          <p>Crea, consulta, actualiza y elimina nodos y sus propiedades.</p>
         </div>
       </div>
 
       <div className="grid-2">
+        {/* CREAR */}
         <div className="panel">
           <h3>Crear nodo</h3>
-          <label>Labels separadas por coma</label>
-          <input value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="Usuario, Sospechoso" />
-          <label>Propiedades JSON</label>
-          <textarea value={properties} onChange={(e) => setProperties(e.target.value)} rows={12} />
-          <button className="primary" onClick={createNode}>Crear nodo</button>
+          <label>Labels (separadas por coma)</label>
+          <input value={labels} onChange={e => setLabels(e.target.value)} placeholder="Usuario, Sospechoso" />
+          <label>Propiedades (JSON)</label>
+          <textarea value={properties} onChange={e => setProperties(e.target.value)} rows={10} />
+          <div className="button-row">
+            <button className="primary" onClick={() => run(() => api.post('/nodes', {
+              labels: labels.split(',').map(x => x.trim()).filter(Boolean),
+              properties: parseJson(properties),
+            }), 'Nodo creado.')}>
+              + Crear nodo
+            </button>
+          </div>
         </div>
 
+        {/* BUSCAR Y GESTIONAR */}
         <div className="panel">
           <h3>Buscar y gestionar</h3>
           <div className="form-grid">
             <div>
               <label>Label</label>
-              <input value={searchLabel} onChange={(e) => setSearchLabel(e.target.value)} />
+              <input value={searchLabel} onChange={e => setSearchLabel(e.target.value)} />
             </div>
             <div>
-              <label>Propiedad de búsqueda</label>
-              <input value={matchProperty} onChange={(e) => setMatchProperty(e.target.value)} />
+              <label>Propiedad filtro</label>
+              <input value={matchProperty} onChange={e => setMatchProperty(e.target.value)} placeholder="id_usuario" />
             </div>
-            <div>
+            <div style={{ gridColumn: 'span 2' }}>
               <label>Valor</label>
-              <input value={matchValue} onChange={(e) => setMatchValue(e.target.value)} />
+              <input value={matchValue} onChange={e => setMatchValue(e.target.value)} placeholder="Dejar vacío para traer todos" />
             </div>
           </div>
-          <button onClick={searchNodes}>Consultar nodos</button>
-          <label>Propiedades para agregar/actualizar</label>
-          <textarea value={updateProps} onChange={(e) => setUpdateProps(e.target.value)} rows={6} />
           <div className="button-row">
-            <button onClick={updateNode}>Actualizar 1 nodo</button>
-            <button onClick={bulkUpdate}>Actualizar varios</button>
+            <button className="default" onClick={searchNodes}>⌕ Consultar nodos</button>
           </div>
-          <label>Propiedades a eliminar, separadas por coma</label>
-          <input value={deleteProps} onChange={(e) => setDeleteProps(e.target.value)} />
+
+          <hr className="section-divider" />
+
+          <label>Propiedades a agregar / actualizar (JSON)</label>
+          <textarea value={updateProps} onChange={e => setUpdateProps(e.target.value)} rows={5} />
           <div className="button-row">
-            <button onClick={deleteNodeProperties}>Eliminar propiedades</button>
-            <button onClick={bulkDeleteProperties}>Eliminar propiedades en varios</button>
-            <button className="danger" onClick={deleteNode}>Eliminar nodo</button>
+            <button className="default" onClick={() => run(() => api.patch('/nodes', {
+              label: searchLabel, match_property: matchProperty, match_value: matchValue,
+              properties: parseJson(updateProps),
+            }), 'Propiedades actualizadas.')}>Actualizar 1 nodo</button>
+            <button className="default" onClick={() => run(() => api.patch('/nodes/bulk', {
+              label: searchLabel, match_property: matchProperty || null, match_value: matchValue || null,
+              properties: parseJson(updateProps), limit: 25,
+            }), 'Actualización múltiple.')}>Actualizar varios</button>
+          </div>
+
+          <hr className="section-divider" />
+
+          <label>Propiedades a eliminar (separadas por coma)</label>
+          <input value={deleteProps} onChange={e => setDeleteProps(e.target.value)} />
+          <div className="button-row">
+            <button className="default" onClick={() => run(() => api.delete('/nodes/properties', { data: {
+              label: searchLabel, match_property: matchProperty, match_value: matchValue,
+              property_names: deleteProps.split(',').map(x => x.trim()).filter(Boolean),
+            }}), 'Propiedades eliminadas.')}>Elim. propiedades</button>
+            <button className="default" onClick={() => run(() => api.delete('/nodes/bulk/properties', { data: {
+              label: searchLabel, match_property: matchProperty || null, match_value: matchValue || null,
+              property_names: deleteProps.split(',').map(x => x.trim()).filter(Boolean), limit: 25,
+            }}), 'Propiedades eliminadas en varios.')}>Elim. en varios</button>
+            <button className="danger" onClick={() => run(() => api.delete('/nodes', { data: {
+              label: searchLabel, match_property: matchProperty, match_value: matchValue,
+            }}), 'Nodo eliminado.')}>✕ Eliminar nodo</button>
           </div>
         </div>
       </div>
 
       <Status loading={loading} error={error} message={message} />
       <JsonBox data={result} />
-      <div className="panel">
-        <h3>Resultado de consulta</h3>
-        <DataTable rows={rows} />
-      </div>
+      {rows.length > 0 && (
+        <div className="panel">
+          <h3>Resultado de consulta</h3>
+          <DataTable rows={rows} />
+        </div>
+      )}
     </section>
   )
 }

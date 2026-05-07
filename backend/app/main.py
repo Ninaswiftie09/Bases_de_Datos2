@@ -25,7 +25,7 @@ from .schemas import (
     RelationshipUpdate,
 )
 from .settings import get_settings
-
+DEFAULT_CSV_URL = "https://raw.githubusercontent.com/Ninaswiftie09/Bases_de_Datos2/refs/heads/Proyecto2/data/transacciones_fraude.csv"
 settings = get_settings()
 app = FastAPI(
     title="API de Detección de Fraude con Neo4j",
@@ -56,7 +56,17 @@ def handle_error(exc: Exception):
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-
+@app.post("/load/default")
+async def load_default(
+    batch_size: int = Query(500, ge=1, le=2000),
+    clear_before_load: bool = Query(False),
+    graph: GraphService = Depends(get_service),
+):
+    try:
+        return await graph.load_csv_url(DEFAULT_CSV_URL, batch_size, clear_before_load)
+    except Exception as exc:
+        handle_error(exc)
+        
 @app.on_event("shutdown")
 def shutdown_event():
     connection.close()

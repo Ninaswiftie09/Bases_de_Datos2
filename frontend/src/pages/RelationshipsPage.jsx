@@ -16,29 +16,26 @@ export default function RelationshipsPage() {
   const [relType, setRelType] = useState('USA')
   const [rows, setRows] = useState([])
   const [elementId, setElementId] = useState('')
-  const [updateProps, setUpdateProps] = useState(JSON.stringify({ revisada: true, observacion: 'Actualizada desde interfaz' }, null, 2))
+  const [updateProps, setUpdateProps] = useState(JSON.stringify({ revisada: true, observacion: 'Actualizada' }, null, 2))
   const [deleteProps, setDeleteProps] = useState('observacion')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
-  function updateField(key, value) { setForm({ ...form, [key]: value }) }
   function parseJson(text) {
     try { return JSON.parse(text || '{}') }
-    catch { throw new Error('El JSON de propiedades no es válido.') }
+    catch { throw new Error('JSON no válido.') }
   }
 
-  async function run(action, success = 'Operación realizada correctamente.') {
+  async function run(action, success) {
     setLoading(true); setError(''); setMessage(''); setResult(null)
     try {
       const { data } = await action()
-      setResult(data)
-      setMessage(success)
+      setResult(data); setMessage(success)
       await loadRelationships()
-    } catch (err) {
-      setError(formatError(err))
-    } finally { setLoading(false) }
+    } catch (err) { setError(formatError(err)) }
+    finally { setLoading(false) }
   }
 
   async function loadRelationships() {
@@ -53,90 +50,86 @@ export default function RelationshipsPage() {
 
   useEffect(() => { loadRelationships() }, [])
 
-  async function createRelationship() {
-    await run(() => api.post('/relationships', { ...form, properties: parseJson(properties) }), 'Relación creada correctamente.')
-  }
-
-  async function updateRelationship() {
-    await run(() => api.patch('/relationships', { element_id: elementId, properties: parseJson(updateProps) }), 'Relación actualizada.')
-  }
-
-  async function deleteRelationshipProperties() {
-    await run(() => api.delete('/relationships/properties', { data: { element_id: elementId, property_names: deleteProps.split(',').map(x => x.trim()).filter(Boolean) }}), 'Propiedades eliminadas.')
-  }
-
-  async function deleteRelationship() {
-    await run(() => api.delete('/relationships', { data: { element_id: elementId }}), 'Relación eliminada.')
-  }
-
-  async function bulkUpdate() {
-    await run(() => api.patch('/relationships/bulk', { relationship_type: relType, properties: parseJson(updateProps), limit: 25 }), 'Actualización múltiple realizada.')
-  }
-
-  async function bulkDeleteProperties() {
-    await run(() => api.delete('/relationships/bulk/properties', { data: { relationship_type: relType, property_names: deleteProps.split(',').map(x => x.trim()).filter(Boolean), limit: 25 }}), 'Propiedades eliminadas en varias relaciones.')
-  }
-
-  async function bulkDelete() {
-    await run(() => api.delete('/relationships/bulk', { data: { relationship_type: relType, limit: 5 }}), 'Relaciones eliminadas.')
-  }
-
   return (
     <section>
       <div className="page-header">
         <div>
-          <p className="eyebrow">CRUD de relaciones</p>
-          <h2>Gestión de relaciones con propiedades</h2>
-          <p>Cree, consulte, actualice y elimine relaciones entre nodos existentes del grafo.</p>
+          <p className="eyebrow">CRUD · Relaciones</p>
+          <h2>Gestión de relaciones</h2>
+          <p>Crea, consulta, actualiza y elimina relaciones entre nodos del grafo.</p>
         </div>
       </div>
 
       <div className="grid-2">
+        {/* CREAR */}
         <div className="panel">
           <h3>Crear relación</h3>
           <div className="form-grid">
             {Object.entries(form).map(([key, value]) => (
               <div key={key}>
-                <label>{key}</label>
-                <input value={value} onChange={(e) => updateField(key, e.target.value)} />
+                <label>{key.replace(/_/g,' ')}</label>
+                <input value={value} onChange={e => setForm({ ...form, [key]: e.target.value })} />
               </div>
             ))}
           </div>
-          <label>Propiedades JSON</label>
-          <textarea value={properties} onChange={(e) => setProperties(e.target.value)} rows={8} />
-          <button className="primary" onClick={createRelationship}>Crear relación</button>
+          <label>Propiedades (JSON)</label>
+          <textarea value={properties} onChange={e => setProperties(e.target.value)} rows={8} />
+          <div className="button-row">
+            <button className="primary" onClick={() => run(() => api.post('/relationships', {
+              ...form, properties: parseJson(properties),
+            }), 'Relación creada.')}>+ Crear relación</button>
+          </div>
         </div>
 
+        {/* GESTIONAR */}
         <div className="panel">
           <h3>Consultar y modificar</h3>
           <label>Tipo de relación</label>
-          <input value={relType} onChange={(e) => setRelType(e.target.value)} placeholder="TIENE_CUENTA" />
-          <button onClick={loadRelationships}>Consultar relaciones</button>
-          <label>elementId de relación</label>
-          <input value={elementId} onChange={(e) => setElementId(e.target.value)} />
-          <label>Propiedades para actualizar</label>
-          <textarea value={updateProps} onChange={(e) => setUpdateProps(e.target.value)} rows={6} />
-          <div className="button-row">
-            <button onClick={updateRelationship}>Actualizar 1</button>
-            <button onClick={bulkUpdate}>Actualizar varias</button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input value={relType} onChange={e => setRelType(e.target.value)} placeholder="USA, TIENE_CUENTA..." />
+            <button className="default" style={{ flexShrink: 0 }} onClick={loadRelationships}>⌕</button>
           </div>
-          <label>Propiedades a eliminar</label>
-          <input value={deleteProps} onChange={(e) => setDeleteProps(e.target.value)} />
+          <label>element_id de relación</label>
+          <input value={elementId} onChange={e => setElementId(e.target.value)} placeholder="Se llena automáticamente al consultar" />
+
+          <hr className="section-divider" />
+
+          <label>Propiedades a actualizar (JSON)</label>
+          <textarea value={updateProps} onChange={e => setUpdateProps(e.target.value)} rows={5} />
           <div className="button-row">
-            <button onClick={deleteRelationshipProperties}>Eliminar propiedades</button>
-            <button onClick={bulkDeleteProperties}>Eliminar propiedades en varias</button>
-            <button className="danger" onClick={deleteRelationship}>Eliminar 1 relación</button>
-            <button className="danger" onClick={bulkDelete}>Eliminar varias</button>
+            <button className="default" onClick={() => run(() => api.patch('/relationships', {
+              element_id: elementId, properties: parseJson(updateProps),
+            }), 'Relación actualizada.')}>Actualizar 1</button>
+            <button className="default" onClick={() => run(() => api.patch('/relationships/bulk', {
+              relationship_type: relType, properties: parseJson(updateProps), limit: 25,
+            }), 'Actualización múltiple.')}>Actualizar varias</button>
+          </div>
+
+          <hr className="section-divider" />
+
+          <label>Propiedades a eliminar (separadas por coma)</label>
+          <input value={deleteProps} onChange={e => setDeleteProps(e.target.value)} />
+          <div className="button-row">
+            <button className="default" onClick={() => run(() => api.delete('/relationships/properties', { data: {
+              element_id: elementId, property_names: deleteProps.split(',').map(x => x.trim()).filter(Boolean),
+            }}), 'Propiedades eliminadas.')}>Elim. propiedades</button>
+            <button className="default" onClick={() => run(() => api.delete('/relationships/bulk/properties', { data: {
+              relationship_type: relType, property_names: deleteProps.split(',').map(x => x.trim()).filter(Boolean), limit: 25,
+            }}), 'Eliminado en varias.')}>Elim. en varias</button>
+            <button className="danger" onClick={() => run(() => api.delete('/relationships', { data: { element_id: elementId }}), 'Relación eliminada.')}>✕ Eliminar 1</button>
+            <button className="danger" onClick={() => run(() => api.delete('/relationships/bulk', { data: { relationship_type: relType, limit: 5 }}), 'Relaciones eliminadas.')}>✕ Eliminar varias</button>
           </div>
         </div>
       </div>
 
       <Status loading={loading} error={error} message={message} />
       <JsonBox data={result} />
-      <div className="panel">
-        <h3>Relaciones consultadas</h3>
-        <DataTable rows={rows} />
-      </div>
+      {rows.length > 0 && (
+        <div className="panel">
+          <h3>Relaciones consultadas</h3>
+          <DataTable rows={rows} />
+        </div>
+      )}
     </section>
   )
 }
