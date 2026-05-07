@@ -640,3 +640,33 @@ class GraphService:
             """,
             {"limit": limit},
         )
+    
+    def is_graph_connected(self):
+        result = self._run_read("""
+            MATCH (n)
+            WITH collect(n) AS nodes
+            CALL {
+                WITH nodes
+                MATCH (start)
+                WITH start
+                MATCH (start)-[*]-(reachable)
+                RETURN count(DISTINCT reachable) AS reachable_count
+                LIMIT 1
+            }
+            RETURN size(nodes) AS total_nodes, reachable_count
+        """)
+
+        if not result:
+            return {"total_nodes": 0, "reachable": 0, "is_connected": False}
+
+        data = result[0]
+        total = data["total_nodes"]
+        reachable = data["reachable_count"]
+
+        return {
+            "total_nodes": total,
+            "reachable_nodes": reachable,
+            "is_connected": total == reachable
+        }
+    
+    

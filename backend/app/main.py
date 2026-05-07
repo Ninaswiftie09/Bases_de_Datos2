@@ -312,3 +312,10 @@ def fraud_score(limit: int = Query(50, ge=1, le=500), graph: GraphService = Depe
         return graph.fraud_score(limit)
     except Exception as exc:
         handle_error(exc)
+
+@app.get("/graph/connected")
+def graph_connected(graph: GraphService = Depends(get_service)):
+    try:
+        return graph.is_graph_connected()
+    except Exception as exc:
+        handle_error(exc)
