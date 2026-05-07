@@ -10,3 +10,8 @@ export function formatError(error) {
   if (error?.message) return error.message
   return 'Error desconocido'
 }
+
+export const getGraphConnected = async () => {
+  const response = await fetch("http://localhost:8000/graph/connected");
+  return response.json();
+};

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import ForceGraph2D from 'react-force-graph-2d'
-import { api, formatError } from '../services/api.js'
 import Status from '../components/Status.jsx'
+import { api, formatError, getGraphConnected } from '../services/api.js'
 
 const labelColors = {
   Usuario: '#0090ff',
@@ -22,6 +22,7 @@ export default function GraphPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [selected, setSelected] = useState(null)
+  const [graphStatus, setGraphStatus] = useState(null)
 
   async function loadGraph() {
     setLoading(true); setError('')
@@ -30,6 +31,15 @@ export default function GraphPage() {
       setGraph(data)
     } catch (err) { setError(formatError(err)) }
     finally { setLoading(false) }
+  }
+
+  async function checkGraph() {
+    try {
+      const data = await getGraphConnected()
+      setGraphStatus(data)
+    } catch (err) {
+      setError(formatError(err))
+    }
   }
 
   useEffect(() => { loadGraph() }, [])
@@ -53,6 +63,7 @@ export default function GraphPage() {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <input className="small-input" type="number" value={limit} onChange={e => setLimit(e.target.value)} />
           <button className="primary" onClick={loadGraph}>↻ Cargar grafo</button>
+          <button onClick={checkGraph}>✔ Validar grafo</button>
         </div>
       </div>
 
@@ -104,6 +115,23 @@ export default function GraphPage() {
             ? <pre className="json-box compact">{JSON.stringify(selected, null, 2)}</pre>
             : <p className="empty">Haz clic en un nodo para ver sus propiedades.</p>
           }
+
+          <hr className="section-divider" />
+          <h3>Estado del grafo</h3>
+
+<div style={{ background: "#1a2332", padding: "12px", borderRadius: "8px", marginTop: "8px" }}>
+  {graphStatus ? (
+    <>
+      <p><strong>Total nodos:</strong> {graphStatus.total_nodes}</p>
+      <p><strong>Alcanzables:</strong> {graphStatus.reachable_nodes}</p>
+      <p>
+        <strong>Estado:</strong> {graphStatus.is_connected ? "Conexo ✅" : "No conexo ❌"}
+      </p>
+    </>
+  ) : (
+    <p className="empty">Presiona validar para verificar el grafo.</p>
+  )}
+</div>
         </aside>
       </div>
     </section>
