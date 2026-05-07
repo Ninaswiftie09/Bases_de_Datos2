@@ -26,6 +26,22 @@ RETURN d.id_dispositivo, size(usuarios), usuarios`,
 (u)-[:TIENE_CUENTA]->(c:Cuenta)-[:EMITE]->(t:Transaccion)-[:OCURRE_EN]->(ut:Ubicacion)
 WHERE ur.pais <> ut.pais OR ur.ciudad <> ut.ciudad
 RETURN u.nombre, c.id_cuenta, t.id_transaccion`,
+  'high-amount': `MATCH (u:Usuario)-[:TIENE_CUENTA]->(c:Cuenta)-[:EMITE]->(t:Transaccion)
+WHERE t.monto > 10000
+RETURN u.nombre AS usuario, c.id_cuenta AS cuenta, t.id_transaccion AS transaccion, t.monto AS monto, t.fecha AS fecha
+ORDER BY monto DESC
+LIMIT $limit`,
+  'new-or-inactive-accounts': `MATCH (t:Transaccion)-[:TRANSFIERE_A]->(c:Cuenta)
+WHERE c.activa = false OR c.fecha_creacion >= date('2026-03-01')
+WITH c, count(t) AS recibidas, sum(t.monto) AS total
+WHERE recibidas >= 3
+RETURN c.id_cuenta AS cuenta, c.activa AS activa, c.fecha_creacion AS fecha_creacion, recibidas, round(total, 2) AS total
+ORDER BY recibidas DESC
+LIMIT $limit`,
+  'transfer-chains': `MATCH path = (c1:Cuenta)-[:EMITE]->(:Transaccion)-[:TRANSFIERE_A]->(c2:Cuenta)<-[:TRANSFIERE_A]-(:Transaccion)<-[:EMITE]-(c3:Cuenta)
+WHERE c1.id_cuenta <> c3.id_cuenta
+RETURN c1.id_cuenta AS cuenta_origen, c2.id_cuenta AS cuenta_intermedia, c3.id_cuenta AS cuenta_relacionada, length(path) AS profundidad
+LIMIT $limit`,
 }
 
 export default function QueriesPage() {
