@@ -272,6 +272,63 @@ class GraphService:
         )
         return result[0]
 
+    def get_node_by_id(self, element_id: str):
+        result = self._run_read(
+            """
+            MATCH (n)
+            WHERE elementId(n) = $element_id
+            RETURN elementId(n) AS element_id,
+                labels(n) AS labels,
+                properties(n) AS properties
+            """,
+            {"element_id": element_id},
+        )
+
+        if not result:
+            raise HTTPException(status_code=404, detail="No se encontró un nodo con ese element_id.")
+
+        return result[0]
+
+
+    def node_aggregations(self):
+        nodes_by_label = self._run_read(
+            """
+            MATCH (n)
+            UNWIND labels(n) AS label
+            RETURN label, count(n) AS cantidad
+            ORDER BY cantidad DESC
+            """,
+            {},
+        )
+
+        avg_amount_by_transaction_type = self._run_read(
+            """
+            MATCH (t:Transaccion)
+            RETURN coalesce(t.tipo, 'Sin tipo') AS tipo_transaccion,
+                round(avg(toFloat(t.monto)) * 100) / 100 AS promedio_monto,
+                count(t) AS cantidad_transacciones
+            ORDER BY promedio_monto DESC
+            """,
+            {},
+        )
+
+        suspicious_transactions_by_city = self._run_read(
+            """
+            MATCH (t:Transaccion)-[:OCURRE_EN]->(u:Ubicacion)
+            WHERE coalesce(t.es_sospechosa, false) = true
+            RETURN coalesce(u.ciudad, 'Sin ciudad') AS ciudad,
+                count(t) AS total_sospechosas
+            ORDER BY total_sospechosas DESC, ciudad ASC
+            LIMIT 25
+            """,
+            {},
+        )
+
+        return {
+            "nodes_by_label": nodes_by_label,
+            "avg_amount_by_transaction_type": avg_amount_by_transaction_type,
+            "suspicious_transactions_by_city": suspicious_transactions_by_city,
+        }
     def get_nodes(self, label: str, match_property: str | None = None, match_value: Any | None = None, limit: int = 50):
         label_cypher = cypher_label(label)
         params: dict[str, Any] = {"limit": limit}

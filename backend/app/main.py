@@ -145,6 +145,20 @@ def create_node(payload: NodeCreate, graph: GraphService = Depends(get_service))
     except Exception as exc:
         handle_error(exc)
 
+@app.get("/nodes/by-id/{element_id}")
+def get_node_by_id(element_id: str, graph: GraphService = Depends(get_service)):
+    try:
+        return graph.get_node_by_id(element_id)
+    except Exception as exc:
+        handle_error(exc)
+
+
+@app.get("/nodes/aggregations/summary")
+def node_aggregations(graph: GraphService = Depends(get_service)):
+    try:
+        return graph.node_aggregations()
+    except Exception as exc:
+        handle_error(exc)
 
 @app.get("/nodes/{label}")
 def get_nodes(
