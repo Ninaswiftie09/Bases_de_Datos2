@@ -1,54 +1,41 @@
-# Proyecto 02 Neo4j - Detección de Fraude
+# Proyecto 02 - Neo4j
 
-Este proyecto implementa una aplicación web para gestionar y analizar un grafo de detección de fraude bancario usando Neo4j/AuraDB, un backend en Python con FastAPI y un frontend en React.
+## Detección de fraude bancario
 
-El sistema permite cargar datos desde CSV, crear nodos y relaciones, consultar información del grafo, actualizar propiedades, eliminar nodos o relaciones y ejecutar consultas Cypher orientadas a la detección de patrones sospechosos.
+Este proyecto implementa una aplicación web para gestionar y consultar un modelo de grafos en Neo4j/AuraDB orientado a la detección de fraude en transacciones bancarias.
 
-## 1. Estructura del proyecto
+La solución está compuesta por:
 
-```text
-fraude-neo4j/
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── db.py
-│   │   ├── graph_service.py
-│   │   ├── schemas.py
-│   │   ├── settings.py
-│   │   └── utils.py
-│   ├── scripts/
-│   │   ├── constraints.cypher
-│   │   └── load_csv.py
-│   ├── requirements.txt
-│   └── .env.example
-├── frontend/
-│   ├── src/
-│   ├── package.json
-│   └── .env.example
-├── data/
-│   └── transacciones_fraude.csv
-├── docs/
-│   └── MODELO_GRAFO.md
-└── README.md
+- Backend en Python con FastAPI.
+- Frontend en React con Vite.
+- Base de datos Neo4j AuraDB.
+- Carga masiva desde un CSV oficial publicado en GitHub Raw.
+- Operaciones CRUD para nodos y relaciones.
+- Consultas Cypher para detectar patrones sospechosos.
+- Visualización básica del grafo.
+
+## Modelo del grafo
+
+El modelo utiliza las entidades presentadas en la propuesta del proyecto:
+
+- Usuario
+- Cuenta
+- Transaccion
+- Dispositivo
+- Ubicacion
+
+También se pueden crear nodos con más de una etiqueta desde la interfaz, por ejemplo:
+
+```txt
+Transaccion,Sospechosa
+Usuario,Sospechoso
 ```
 
-## 2. Modelo del grafo
+## Relaciones principales
 
-El modelo utiliza los nodos presentados en la propuesta del proyecto:
+El grafo maneja los siguientes tipos de relaciones:
 
-- `Usuario`
-- `Cuenta`
-- `Transaccion`
-- `Dispositivo`
-- `Ubicacion`
-
-Cada label tiene más de cinco propiedades. El CSV también genera propiedades de diferentes tipos: texto, entero, decimal, booleano, lista y fecha.
-
-### Relaciones implementadas
-
-El sistema implementa las diez relaciones definidas en el diseño inicial:
-
-```text
+```txt
 (Usuario)-[:TIENE_CUENTA]->(Cuenta)
 (Cuenta)-[:EMITE]->(Transaccion)
 (Transaccion)-[:TRANSFIERE_A]->(Cuenta)
@@ -61,339 +48,219 @@ El sistema implementa las diez relaciones definidas en el diseño inicial:
 (Dispositivo)-[:UBICADO_EN]->(Ubicacion)
 ```
 
-Cada relación se crea con tres o más propiedades, por ejemplo: `fecha_creacion`, `fuente`, `confianza`, `canal`, `estado`, `riesgo`, entre otras.
+Cada relación incluye propiedades como fecha, fuente, confianza, canal, estado o datos equivalentes según el tipo de relación.
 
-## 3. Requisitos previos
+## Requisitos
 
-Debe tener instalado lo siguiente:
+Para ejecutar el proyecto se requiere:
 
-- Python 3.11 o superior
-- Node.js 18 o superior
-- npm
-- Una instancia activa de Neo4j AuraDB o Neo4j local
+- Docker Desktop instalado.
+- Docker Compose disponible.
+- Una instancia activa de Neo4j AuraDB.
+- Credenciales válidas de Neo4j.
+- Acceso a internet para descargar el CSV oficial desde GitHub Raw.
 
-## 4. Configuración del backend
+## Configuración del backend
 
-Ingrese a la carpeta del backend:
-
-```bash
-cd backend
-```
-
-Cree un entorno virtual:
-
-```bash
-python -m venv .venv
-```
-
-Active el entorno virtual.
-
-En Windows PowerShell:
-
-```bash
-.venv\Scripts\activate
-```
-
-En Linux, macOS o Git Bash:
-
-```bash
-source .venv/bin/activate
-```
-
-Instale las dependencias:
-
-```bash
-pip install -r requirements.txt
-```
-
-Copie el archivo de variables de entorno:
-
-```bash
-cp .env.example .env
-```
-
-Edite el archivo `.env` y coloque sus credenciales de Neo4j/AuraDB:
+Dentro de la carpeta `backend`, cree un archivo `.env` con la siguiente estructura:
 
 ```env
 NEO4J_URI=neo4j+s://SU_INSTANCIA.databases.neo4j.io
-NEO4J_USERNAME=SU_USUARIO
+NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=SU_PASSWORD
-NEO4J_DATABASE=SU_BASE_DE_DATOS
-FRONTEND_ORIGIN=http://localhost:5173
+NEO4J_DATABASE=neo4j
+FRONTEND_ORIGIN=http://localhost:3000
 ```
 
-Ejecute el backend:
+Si su instancia utiliza el ID de Aura como usuario, puede colocar ese valor en `NEO4J_USERNAME`. En Neo4j Aura, el valor de `NEO4J_DATABASE` normalmente debe ser `neo4j`.
+
+No se recomienda guardar credenciales reales dentro del repositorio público.
+
+## CSV oficial
+
+La carga masiva se realiza desde el backend usando el siguiente enlace configurado en el código:
+
+```txt
+https://raw.githubusercontent.com/Ninaswiftie09/Bases_de_Datos2/refs/heads/Proyecto2/data/transacciones_fraude.csv
+```
+
+El frontend ya no solicita que el usuario pegue una URL. En la pantalla principal solo se muestra el botón para cargar el CSV oficial.
+
+## Ejecución con Docker
+
+Desde la raíz del proyecto, ejecute:
 
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+docker compose down --remove-orphans
+docker compose up --build
 ```
 
-La documentación automática del API estará disponible en:
+Cuando los contenedores estén activos, use las siguientes rutas:
 
-```text
-http://localhost:8000/docs
+```txt
+Frontend: http://localhost:3000
+Backend:  http://localhost:8000
+Docs API: http://localhost:8000/docs
 ```
 
-## 5. Configuración del frontend
+## Flujo recomendado de uso
 
-En otra terminal, ingrese a la carpeta del frontend:
-
-```bash
-cd frontend
-```
-
-Instale las dependencias:
-
-```bash
-npm install
-```
-
-Copie el archivo de variables de entorno:
-
-```bash
-cp .env.example .env
-```
-
-Verifique que el archivo `.env` tenga la URL del backend:
-
-```env
-VITE_API_BASE=http://localhost:8000
-```
-
-Ejecute el frontend:
-
-```bash
-npm run dev
-```
-
-La aplicación estará disponible en:
-
-```text
-http://localhost:5173
-```
-
-## 6. Carga de datos
-
-El proyecto incluye el archivo:
-
-```text
-data/transacciones_fraude.csv
-```
-
-Este archivo contiene 3200 transacciones y genera más de 5000 nodos distintos al cargarse en Neo4j.
-
-### Opción A: cargar desde la interfaz
-
-1. Abra el frontend en `http://localhost:5173`.
-2. Ingrese al Dashboard.
+1. Abra el frontend en `http://localhost:3000`.
+2. Ingrese a la pantalla `Inicio`.
 3. Presione `Crear constraints`.
-4. Presione `Cargar CSV local` si está ejecutando el backend desde la carpeta `backend`.
-5. También puede subir el archivo CSV desde la opción de carga manual.
-6. También puede pegar una URL raw del CSV si el archivo fue subido a GitHub.
+4. Presione `Cargar datos`.
+5. Revise los conteos de nodos, relaciones y transacciones sospechosas.
+6. Use las secciones `Nodos`, `Relaciones`, `Alertas` y `Grafo` para demostrar las funcionalidades.
 
-### Opción B: cargar desde el endpoint
+## Funcionalidades principales
 
-```bash
-curl -X POST http://localhost:8000/load/local \
-  -H "Content-Type: application/json" \
-  -d '{"path":"../data/transacciones_fraude.csv", "batch_size":500, "clear_before_load":false}'
-```
+### Inicio
 
-### Opción C: cargar desde script
+Permite ejecutar las acciones iniciales del sistema:
 
-Desde la carpeta `backend`:
-
-```bash
-python scripts/load_csv.py ../data/transacciones_fraude.csv
-```
-
-Para limpiar la base antes de cargar:
-
-```bash
-python scripts/load_csv.py ../data/transacciones_fraude.csv --clear
-```
-
-## 7. Funcionalidades principales
-
-### Dashboard
-
-Permite crear constraints, cargar CSV, limpiar la base de datos y revisar conteos por label y por tipo de relación.
+- Crear constraints.
+- Cargar el CSV oficial.
+- Limpiar la base de datos.
+- Ver conteos por label y por tipo de relación.
 
 ### Nodos
 
 Permite realizar operaciones CRUD sobre nodos:
 
-- Crear nodo con una label.
-- Crear nodo con dos o más labels.
-- Crear nodo con cinco o más propiedades.
+- Crear nodos con una etiqueta.
+- Crear nodos con dos o más etiquetas.
+- Crear nodos con propiedades.
 - Consultar nodos por label.
-- Consultar nodos usando filtros.
-- Agregar o actualizar propiedades de un nodo.
-- Agregar o actualizar propiedades de múltiples nodos.
+- Consultar nodos con filtros por propiedad.
+- Actualizar propiedades de un nodo.
+- Actualizar propiedades de varios nodos.
 - Eliminar propiedades de un nodo.
-- Eliminar propiedades de múltiples nodos.
+- Eliminar propiedades de varios nodos.
 - Eliminar un nodo.
-- Eliminar múltiples nodos.
+- Eliminar varios nodos.
 
 ### Relaciones
 
 Permite realizar operaciones CRUD sobre relaciones:
 
-- Crear relación entre dos nodos existentes.
-- Crear relación con tres o más propiedades.
+- Crear relaciones entre nodos existentes.
+- Crear relaciones con propiedades.
 - Consultar relaciones por tipo.
 - Actualizar propiedades de una relación.
-- Actualizar propiedades de múltiples relaciones.
+- Actualizar propiedades de varias relaciones.
 - Eliminar propiedades de una relación.
-- Eliminar propiedades de múltiples relaciones.
+- Eliminar propiedades de varias relaciones.
 - Eliminar una relación.
-- Eliminar múltiples relaciones.
+- Eliminar varias relaciones.
 
-### Consultas
+### Alertas
 
-Incluye consultas Cypher para detectar:
+Ejecuta consultas Cypher orientadas a patrones sospechosos:
 
-- Transacciones pequeñas y constantes.
+- Microtransacciones frecuentes.
 - Dispositivos compartidos por varios usuarios.
-- Transacciones desde ubicaciones inusuales.
+- Ubicaciones inusuales.
 - Transacciones de monto alto.
-- Transferencias hacia cuentas nuevas o inactivas.
-- Cadenas de transferencias entre cuentas relacionadas.
+- Cuentas nuevas o inactivas.
+- Cadenas de transferencias.
 
-También incluye un score de riesgo como algoritmo simple de Data Science.
+También permite calcular un score de riesgo basado en reglas simples del modelo.
 
 ### Grafo
 
-Muestra una visualización interactiva del grafo usando React. Permite observar nodos y relaciones de manera visual.
+Muestra una visualización exploratoria de nodos y relaciones. Permite seleccionar un nodo y revisar sus propiedades principales.
 
-## 8. Consultas Cypher principales
+## Endpoints relevantes
 
-### Transacciones pequeñas y constantes
+Algunos endpoints principales del backend son:
 
-```cypher
-MATCH (c:Cuenta)-[:EMITE]->(t:Transaccion)
-WHERE t.monto < 100
-WITH c, t.fecha AS dia, count(t) AS cantidad, sum(t.monto) AS total, collect(t.id_transaccion)[0..10] AS transacciones
-WHERE cantidad >= 8
-RETURN c.id_cuenta AS cuenta, dia, cantidad, round(total, 2) AS total, transacciones
-ORDER BY cantidad DESC;
-```
-
-### Dispositivos compartidos
-
-```cypher
-MATCH (u:Usuario)-[:USA]->(d:Dispositivo)
-WITH d, collect(DISTINCT u.nombre) AS usuarios
-WHERE size(usuarios) >= 2
-RETURN d.id_dispositivo AS dispositivo, size(usuarios) AS total_usuarios, usuarios[0..10] AS usuarios
-ORDER BY total_usuarios DESC;
-```
-
-### Ubicaciones inusuales
-
-```cypher
-MATCH (u:Usuario)-[:RESIDE_EN]->(ur:Ubicacion),
-      (u)-[:TIENE_CUENTA]->(c:Cuenta)-[:EMITE]->(t:Transaccion)-[:OCURRE_EN]->(ut:Ubicacion)
-WHERE ur.pais <> ut.pais OR ur.ciudad <> ut.ciudad
-RETURN u.nombre AS usuario, c.id_cuenta AS cuenta, t.id_transaccion AS transaccion,
-       ur.ciudad AS ciudad_residencia, ut.ciudad AS ciudad_transaccion, ut.pais AS pais_transaccion;
-```
-
-### Cuentas nuevas o inactivas
-
-```cypher
-MATCH (t:Transaccion)-[:TRANSFIERE_A]->(c:Cuenta)
-WHERE c.activa = false OR c.fecha_creacion >= date('2026-03-01')
-WITH c, count(t) AS recibidas, sum(t.monto) AS total
-WHERE recibidas >= 3
-RETURN c.id_cuenta AS cuenta, c.activa AS activa, c.fecha_creacion AS fecha_creacion, recibidas, round(total, 2) AS total
-ORDER BY recibidas DESC;
-```
-
-## 9. Score de riesgo
-
-El score de riesgo se calcula en el backend con base en estas señales:
-
-- Muchas transacciones pequeñas desde una cuenta.
-- Uso de dispositivos no confiables.
-- Uso de dispositivos compartidos por varios usuarios.
-- Transferencias hacia cuentas nuevas o inactivas.
-
-La clasificación general es:
-
-```text
-0 - 39: riesgo bajo
-40 - 69: riesgo medio
-70 - 100: riesgo alto
-```
-
-## 10. Endpoints principales
-
-```text
+```txt
 GET    /health
+GET    /summary
 POST   /setup/constraints
 DELETE /setup/clear
-GET    /summary
-POST   /load/local
-POST   /load/url
-POST   /load/upload
+POST   /load/default
 POST   /nodes
 GET    /nodes/{label}
 PATCH  /nodes
-DELETE /nodes/properties
 DELETE /nodes
+DELETE /nodes/properties
 PATCH  /nodes/bulk
-DELETE /nodes/bulk/properties
 DELETE /nodes/bulk
 POST   /relationships
 GET    /relationships
 PATCH  /relationships
-DELETE /relationships/properties
 DELETE /relationships
-PATCH  /relationships/bulk
-DELETE /relationships/bulk/properties
-DELETE /relationships/bulk
 GET    /queries/{query_name}
 GET    /fraud/score
 GET    /graph/sample
 ```
 
-## 11. Cobertura de rúbrica
+## Pruebas rápidas desde consola
 
-El proyecto cubre los siguientes puntos:
+Verificar backend:
 
-- Caso de uso de detección de fraude.
-- Mínimo cinco labels de nodos.
-- Mínimo cinco propiedades por label.
-- Mínimo diez tipos de relaciones.
-- Mínimo tres propiedades por tipo de relación.
-- Tipos de datos: string, float, integer, boolean, list y date.
-- Carga masiva desde CSV.
-- Más de 5000 nodos generados.
-- Datos previamente cargables en Neo4j.
-- Grafo conectado mediante usuarios, cuentas, transacciones, dispositivos y ubicaciones.
-- CRUD de nodos.
-- CRUD de relaciones.
-- Consultas Cypher de fraude.
-- Algoritmo de score de riesgo.
-- Interfaz gráfica en React.
+```bash
+curl http://localhost:8000/health
+```
 
-## 12. Recomendaciones para la presentación
+Crear constraints:
 
-Durante la presentación se recomienda seguir este orden:
+```bash
+curl -X POST http://localhost:8000/setup/constraints
+```
 
-1. Explicar el caso de uso de detección de fraude.
-2. Mostrar el modelo de nodos y relaciones.
-3. Mostrar la carga del CSV y el conteo de nodos.
-4. Mostrar CRUD de nodos.
-5. Mostrar CRUD de relaciones.
-6. Mostrar consultas Cypher.
-7. Mostrar el score de riesgo.
-8. Mostrar la visualización del grafo.
-9. Explicar cómo el sistema detecta transacciones pequeñas y constantes.
+Cargar CSV oficial:
 
-## 13. Notas de seguridad
+```bash
+curl -X POST "http://localhost:8000/load/default?batch_size=500&clear_before_load=false"
+```
 
-No se recomienda subir el archivo `.env` al repositorio. Solamente debe subirse `.env.example`.
+Consultar resumen:
 
-Las credenciales reales de Neo4j/AuraDB deben mantenerse fuera del repositorio público.
+```bash
+curl http://localhost:8000/summary
+```
+
+## Estructura esperada del proyecto
+
+```txt
+Bases_de_Datos2/
+├── backend/
+│   ├── app/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── .env
+├── frontend/
+│   ├── src/
+│   ├── Dockerfile
+│   ├── package.json
+│   └── index.html
+├── data/
+│   └── transacciones_fraude.csv
+├── docs/
+├── docker-compose.yml
+└── README.md
+```
+
+## Notas de presentación
+
+Para la demostración, se recomienda mostrar el sistema en este orden:
+
+1. Inicio: creación de constraints y carga del CSV oficial.
+2. Inicio: conteo de nodos y relaciones.
+3. Nodos: creación de un nodo con una etiqueta y otro con más de una etiqueta.
+4. Nodos: actualización y eliminación de propiedades.
+5. Relaciones: creación de una relación con propiedades.
+6. Relaciones: actualización y eliminación de relaciones.
+7. Alertas: ejecución de consultas Cypher.
+8. Alertas: score de riesgo.
+9. Grafo: visualización de nodos y relaciones.
+
+## Consideraciones
+
+Si el backend responde con error de autenticación, revise las credenciales del archivo `.env`.
+
+Si el backend responde que no encuentra la base de datos, verifique que `NEO4J_DATABASE` tenga el valor `neo4j`.
+
+Si el frontend no logra comunicarse con el backend, verifique que el backend esté activo en `http://localhost:8000` y que el frontend esté corriendo en `http://localhost:3000`.
