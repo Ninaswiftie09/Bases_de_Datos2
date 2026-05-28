@@ -539,6 +539,306 @@ def cargar_oso(db):
 
         db.conectar_piezas_por_lados(**conexion)
 
+def cargar_bus(db):
+    id_rompecabezas = "bus_001"
+
+    rompecabezas = {
+        "id_rompecabezas": id_rompecabezas,
+        "nombre": "Rompecabezas del bus escolar",
+        "marca": "Sin marca",
+        "material": "Madera",
+        "tematica": "Bus escolar",
+        "tipo": "Infantil",
+        "descripcion": "Rompecabezas físico de bus escolar compuesto por 10 piezas. Las piezas 1 y 8 están registradas como faltantes."
+    }
+
+    db.crear_rompecabezas(rompecabezas)
+
+    piezas = [
+        {
+            "id_pieza": "bus_001_pieza_1",
+            "index": 1,
+            "nombre": "Pieza 1",
+            "presente": False,
+            "fila": 1,
+            "columna": 1,
+            "x_relativo": 0.0,
+            "y_relativo": 0.0,
+            "color_principal": "amarillo",
+            "observaciones": "Parte superior izquierda del bus con ventana del dinosaurio. Pieza faltante."
+        },
+        {
+            "id_pieza": "bus_001_pieza_2",
+            "index": 2,
+            "nombre": "Pieza 2",
+            "presente": True,
+            "fila": 2,
+            "columna": 1,
+            "x_relativo": 0.0,
+            "y_relativo": 1.0,
+            "color_principal": "azul",
+            "observaciones": "Parte inferior izquierda/frontal del bus."
+        },
+        {
+            "id_pieza": "bus_001_pieza_3",
+            "index": 3,
+            "nombre": "Pieza 3",
+            "presente": True,
+            "fila": 3,
+            "columna": 1,
+            "x_relativo": 0.0,
+            "y_relativo": 2.0,
+            "color_principal": "negro",
+            "observaciones": "Llanta delantera del bus."
+        },
+        {
+            "id_pieza": "bus_001_pieza_4",
+            "index": 4,
+            "nombre": "Pieza 4",
+            "presente": True,
+            "fila": 1,
+            "columna": 2,
+            "x_relativo": 1.0,
+            "y_relativo": 0.0,
+            "color_principal": "rojo",
+            "observaciones": "Parte superior central con puertas."
+        },
+        {
+            "id_pieza": "bus_001_pieza_5",
+            "index": 5,
+            "nombre": "Pieza 5",
+            "presente": True,
+            "fila": 2,
+            "columna": 2,
+            "x_relativo": 1.0,
+            "y_relativo": 1.0,
+            "color_principal": "naranja",
+            "observaciones": "Parte inferior central con puerta del bus."
+        },
+        {
+            "id_pieza": "bus_001_pieza_6",
+            "index": 6,
+            "nombre": "Pieza 6",
+            "presente": True,
+            "fila": 1,
+            "columna": 3,
+            "x_relativo": 2.0,
+            "y_relativo": 0.0,
+            "color_principal": "verde",
+            "observaciones": "Parte superior central derecha con ventanas."
+        },
+        {
+            "id_pieza": "bus_001_pieza_7",
+            "index": 7,
+            "nombre": "Pieza 7",
+            "presente": True,
+            "fila": 2,
+            "columna": 3,
+            "x_relativo": 2.0,
+            "y_relativo": 1.0,
+            "color_principal": "amarillo",
+            "observaciones": "Parte inferior central derecha con texto SCHOOL."
+        },
+        {
+            "id_pieza": "bus_001_pieza_8",
+            "index": 8,
+            "nombre": "Pieza 8",
+            "presente": False,
+            "fila": 1,
+            "columna": 4,
+            "x_relativo": 3.0,
+            "y_relativo": 0.0,
+            "color_principal": "celeste",
+            "observaciones": "Parte superior derecha del bus con ventana del oso. Pieza faltante."
+        },
+        {
+            "id_pieza": "bus_001_pieza_9",
+            "index": 9,
+            "nombre": "Pieza 9",
+            "presente": True,
+            "fila": 2,
+            "columna": 4,
+            "x_relativo": 3.0,
+            "y_relativo": 1.0,
+            "color_principal": "azul",
+            "observaciones": "Parte trasera derecha del bus."
+        },
+        {
+            "id_pieza": "bus_001_pieza_10",
+            "index": 10,
+            "nombre": "Pieza 10",
+            "presente": True,
+            "fila": 3,
+            "columna": 4,
+            "x_relativo": 3.0,
+            "y_relativo": 2.0,
+            "color_principal": "negro",
+            "observaciones": "Llanta trasera del bus."
+        }
+    ]
+
+    for pieza in piezas:
+        db.crear_pieza(id_rompecabezas, pieza)
+
+    conexiones = [
+        {
+            "id_pieza_origen": "bus_001_pieza_1",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "bus_001_pieza_4",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 1 se conecta con la pieza 4 por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_1",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "bus_001_pieza_2",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 1 se conecta con la pieza 2 por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_2",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "bus_001_pieza_5",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 2 se conecta con la pieza 5 por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_2",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "bus_001_pieza_3",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 2 se conecta con la pieza 3 por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_3",
+            "lado_origen": "derecha_superior",
+            "id_pieza_destino": "bus_001_pieza_5",
+            "lado_destino": "izquierda_inferior",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 3 se conecta con la pieza 5 en la zona inferior izquierda."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_4",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "bus_001_pieza_5",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 4 se conecta con la pieza 5 por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_4",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "bus_001_pieza_6",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 4 se conecta con la pieza 6 por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_5",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "bus_001_pieza_7",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 5 se conecta con la pieza 7 por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_6",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "bus_001_pieza_7",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 6 se conecta con la pieza 7 por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_6",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "bus_001_pieza_8",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 6 se conecta con la pieza 8 por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_7",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "bus_001_pieza_9",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 7 se conecta con la pieza 9 por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_7",
+            "lado_origen": "abajo_derecha",
+            "id_pieza_destino": "bus_001_pieza_10",
+            "lado_destino": "arriba_izquierda",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 7 se conecta con la pieza 10 en la parte inferior derecha."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_8",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "bus_001_pieza_9",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 8 se conecta con la pieza 9 por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "bus_001_pieza_9",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "bus_001_pieza_10",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 9 se conecta con la pieza 10 por la parte inferior."
+        }
+    ]
+
+    enlaces_creados = set()
+
+    for conexion in conexiones:
+        enlace_origen = {
+            "id_enlace": construir_id_enlace(
+                conexion["id_pieza_origen"],
+                conexion["lado_origen"]
+            ),
+            "lado": conexion["lado_origen"],
+            "tipo": "conexion",
+            "forma": "irregular",
+            "descripcion": (
+                "Enlace "
+                + conexion["lado_origen"]
+                + " de "
+                + conexion["id_pieza_origen"]
+            )
+        }
+
+        enlace_destino = {
+            "id_enlace": construir_id_enlace(
+                conexion["id_pieza_destino"],
+                conexion["lado_destino"]
+            ),
+            "lado": conexion["lado_destino"],
+            "tipo": "conexion",
+            "forma": "irregular",
+            "descripcion": (
+                "Enlace "
+                + conexion["lado_destino"]
+                + " de "
+                + conexion["id_pieza_destino"]
+            )
+        }
+
+        if enlace_origen["id_enlace"] not in enlaces_creados:
+            db.crear_enlace(conexion["id_pieza_origen"], enlace_origen)
+            enlaces_creados.add(enlace_origen["id_enlace"])
+
+        if enlace_destino["id_enlace"] not in enlaces_creados:
+            db.crear_enlace(conexion["id_pieza_destino"], enlace_destino)
+            enlaces_creados.add(enlace_destino["id_enlace"])
+
+        db.conectar_piezas_por_lados(**conexion) 
 
 if __name__ == "__main__":
     db = PuzzleDB()
@@ -546,14 +846,15 @@ if __name__ == "__main__":
     try:
         db.crear_restricciones()
 
-        # Esto limpia solo el rompecabezas de prueba para evitar duplicados o datos viejos.
         db.limpiar_rompecabezas("oso_001")
+        db.limpiar_rompecabezas("bus_001")
 
-        # Carga el modelo del rompecabezas del oso.
         cargar_oso(db)
+        cargar_bus(db)
 
-        # Solo muestra un resumen para comprobar que la carga funcionó.
         db.mostrar_resumen_carga("oso_001")
+        print()
+        db.mostrar_resumen_carga("bus_001")
 
     finally:
-        db.close()
+        db.close()  
