@@ -88,7 +88,7 @@ def describir_orientacion(orientacion):
         return None
 
     traduccion = {
-        "normal":   "sin rotación (tal como viene la pieza)",
+        "normal":     "sin rotación (tal como viene la pieza)",
         "rotado_90":  "girada 90° hacia la derecha",
         "rotado_180": "girada 180° (al revés)",
         "rotado_270": "girada 90° hacia la izquierda",
@@ -127,8 +127,14 @@ class PuzzleAssembler:
             auth=(USER, PASSWORD)
         )
 
-        # Piezas ya colocadas
+        # Piezas presentes ya colocadas (o encoladas)
         self.piezas_colocadas = set()
+
+        # Piezas faltantes ya atravesadas para buscar
+        # vecinos presentes al otro lado del hueco.
+        # Evita procesar el mismo hueco más de una vez
+        # si dos piezas presentes apuntan a él.
+        self.faltantes_atravesadas = set()
 
         # Contador de pasos para el usuario
         self.paso = 0
@@ -228,6 +234,7 @@ class PuzzleAssembler:
 
     # =====================================================
     # BUSCAR OTRA PIEZA DISPONIBLE NO COLOCADA
+    # (fallback cuando el grafo queda desconectado)
     # =====================================================
 
     def buscar_nueva_base(self, id_rompecabezas):
@@ -260,12 +267,12 @@ class PuzzleAssembler:
             return None
 
     # =====================================================
-    # IMPRIMIR PIEZA BASE (punto de partida de seccion)
+    # IMPRIMIR PIEZA BASE (punto de partida de sección)
     # =====================================================
 
     def imprimir_pieza_base(self, pieza, es_primera=True):
 
-        fila   = pieza.get("fila")
+        fila    = pieza.get("fila")
         columna = pieza.get("columna")
 
         if es_primera:
@@ -277,10 +284,12 @@ class PuzzleAssembler:
                 f"y colócala como punto de partida."
             )
         else:
+            print("\n┌─────────────────────────────────────┐")
+            print("│      SIGUIENTE PIEZA DE PARTIDA     │")
+            print("└─────────────────────────────────────┘")
             print(
                 f"\nToma la pieza {nombre_pieza(pieza)} "
-                f"y colócala como punto de partida "
-                f"de este nuevo grupo."
+                f"y colócala de forma independiente."
             )
 
         if fila is not None and columna is not None:
@@ -295,12 +304,12 @@ class PuzzleAssembler:
 
         self.paso += 1
 
-        pieza_vecina  = conexion["pieza"]
-        lado_actual   = describir_lado(conexion["lado_actual"])
-        lado_vecino   = describir_lado(conexion["lado_vecino"])
-        orientacion   = describir_orientacion(conexion["orientacion"])
-        descripcion   = conexion["descripcion"]
-        requerido     = conexion["requerido"]
+        pieza_vecina = conexion["pieza"]
+        lado_actual  = describir_lado(conexion["lado_actual"])
+        lado_vecino  = describir_lado(conexion["lado_vecino"])
+        orientacion  = describir_orientacion(conexion["orientacion"])
+        descripcion  = conexion["descripcion"]
+        requerido    = conexion["requerido"]
 
         fila    = pieza_vecina.get("fila")
         columna = pieza_vecina.get("columna")
@@ -329,6 +338,73 @@ class PuzzleAssembler:
 
         if requerido:
             print("  ⚠ Este ensamblaje es obligatorio.")
+
+    # =====================================================
+    # ATRAVESAR PIEZA FALTANTE
+    #
+    # Cuando se encuentra un hueco (pieza no presente),
+    # se consultan sus vecinas en el grafo. Toda vecina
+    # presente que aún no fue colocada se encola como
+    # nueva base (con su propia instrucción de posición),
+    # garantizando que ninguna pieza presente quede
+    # inaccesible por culpa del hueco.
+    # =====================================================
+
+    def atravesar_faltante(self, pieza_faltante, cola):
+
+        id_faltante = pieza_faltante["id_pieza"]
+
+        # Evitar reprocesar el mismo hueco
+        if id_faltante in self.faltantes_atravesadas:
+            return
+
+        self.faltantes_atravesadas.add(id_faltante)
+
+        print(
+            f"\n  ℹ La pieza {nombre_pieza(pieza_faltante)} "
+            f"no está disponible. "
+            f"Se buscan piezas presentes al otro lado del hueco."
+        )
+
+        # Consultar vecinas de la pieza faltante
+        conexiones_del_hueco = self.obtener_conexiones(
+            id_faltante
+        )
+
+        nuevas_bases_encontradas = False
+
+        for conexion in conexiones_del_hueco:
+
+            vecina = conexion["pieza"]
+            id_vecina = vecina["id_pieza"]
+
+            # Solo interesa si está presente y no fue colocada
+            if not vecina["presente"]:
+                continue
+
+            if id_vecina in self.piezas_colocadas:
+                continue
+
+            # -------------------------------------------------
+            # Pieza presente encontrada al otro lado del hueco:
+            # se trata como nueva base independiente.
+            # -------------------------------------------------
+
+            self.imprimir_pieza_base(
+                vecina,
+                es_primera=False
+            )
+
+            self.piezas_colocadas.add(id_vecina)
+            cola.append(vecina)
+
+            nuevas_bases_encontradas = True
+
+        if not nuevas_bases_encontradas:
+            print(
+                "  No se encontraron piezas disponibles "
+                "al otro lado de ese hueco."
+            )
 
     # =====================================================
     # ALGORITMO PRINCIPAL
@@ -399,18 +475,18 @@ class PuzzleAssembler:
                 for conexion in conexiones:
 
                     pieza_vecina = conexion["pieza"]
-
-                    id_vecina = pieza_vecina["id_pieza"]
+                    id_vecina    = pieza_vecina["id_pieza"]
 
                     # -----------------------------------------
-                    # PIEZA FALTANTE
+                    # PIEZA FALTANTE: atravesar el hueco para
+                    # no perder piezas presentes al otro lado.
                     # -----------------------------------------
 
                     if not pieza_vecina["presente"]:
 
-                        print(
-                            f"\n  ℹ La pieza {nombre_pieza(pieza_vecina)} "
-                            f"no está disponible — se omite."
+                        self.atravesar_faltante(
+                            pieza_vecina,
+                            cola
                         )
 
                         continue
@@ -423,7 +499,7 @@ class PuzzleAssembler:
                         continue
 
                     # -----------------------------------------
-                    # IMPRIMIR INSTRUCCION
+                    # PIEZA PRESENTE Y NUEVA: instrucción normal
                     # -----------------------------------------
 
                     self.imprimir_instruccion(
@@ -431,41 +507,31 @@ class PuzzleAssembler:
                         conexion
                     )
 
-                    # -----------------------------------------
-                    # MARCAR COMO COLOCADA
-                    # -----------------------------------------
-
-                    self.piezas_colocadas.add(
-                        id_vecina
-                    )
-
-                    cola.append(
-                        pieza_vecina
-                    )
+                    self.piezas_colocadas.add(id_vecina)
+                    cola.append(pieza_vecina)
 
             # -------------------------------------------------
-            # BUSCAR NUEVA PIEZA BASE (componente desconectada)
+            # FALLBACK: buscar pieza aún no colocada.
+            # Esto solo ocurre si el grafo tiene componentes
+            # completamente aisladas (sin ninguna conexión
+            # hacia el resto), lo cual es poco probable pero
+            # posible en datos mal registrados.
             # -------------------------------------------------
 
             nueva_base = self.buscar_nueva_base(
                 id_rompecabezas
             )
 
-            # -------------------------------------------------
-            # FIN DEL ROMPECABEZAS
-            # -------------------------------------------------
-
             if not nueva_base:
                 break
 
             print("\n┌─────────────────────────────────────┐")
-            print("│         NUEVO GRUPO DE PIEZAS       │")
+            print("│      GRUPO COMPLETAMENTE AISLADO    │")
             print("└─────────────────────────────────────┘")
 
             print(
-                "\nAlgunas piezas faltantes separaron el "
-                "rompecabezas en grupos. Continúa con "
-                "este nuevo grupo de manera independiente."
+                "\nSe encontró una pieza sin conexión "
+                "hacia ninguna pieza ya procesada."
             )
 
             self.imprimir_pieza_base(
@@ -477,9 +543,7 @@ class PuzzleAssembler:
                 nueva_base["id_pieza"]
             )
 
-            cola.append(
-                nueva_base
-            )
+            cola.append(nueva_base)
 
         # =================================================
         # FINALIZAR
@@ -505,7 +569,7 @@ if __name__ == "__main__":
     assembler = PuzzleAssembler()
 
     assembler.armar_rompecabezas(
-        id_rompecabezas="oso_001"
+        id_rompecabezas="bus_001"
     )
 
     assembler.close()
