@@ -12,8 +12,106 @@ import os
 load_dotenv()
 
 URI = os.getenv("NEO4J_URI")
-USER = os.getenv("NEO4J_USER")
+USER = os.getenv("NEO4J_USERNAME")
 PASSWORD = os.getenv("NEO4J_PASSWORD")
+
+
+# =========================================================
+# UTILIDADES DE PRESENTACION
+# =========================================================
+
+def describir_posicion(fila, columna):
+    """
+    Convierte fila/columna en una descripción de posición
+    legible para el usuario final.
+    Asume que fila 1 = arriba, columna 1 = izquierda.
+    """
+
+    descripciones_fila = {
+        1: "primera fila (arriba del todo)",
+        2: "segunda fila",
+        3: "tercera fila",
+        4: "cuarta fila",
+        5: "quinta fila",
+    }
+
+    descripciones_columna = {
+        1: "primera columna (extremo izquierdo)",
+        2: "segunda columna",
+        3: "tercera columna",
+        4: "cuarta columna",
+        5: "quinta columna",
+    }
+
+    desc_fila = (
+        descripciones_fila.get(fila)
+        or f"fila {fila}"
+    )
+
+    desc_columna = (
+        descripciones_columna.get(columna)
+        or f"columna {columna}"
+    )
+
+    return f"{desc_fila}, {desc_columna}"
+
+
+def describir_lado(lado):
+    """
+    Traduce el nombre técnico del lado a lenguaje natural.
+    """
+
+    traduccion = {
+        "top":    "parte de arriba",
+        "bottom": "parte de abajo",
+        "left":   "lado izquierdo",
+        "right":  "lado derecho",
+        "norte":  "parte de arriba",
+        "sur":    "parte de abajo",
+        "oeste":  "lado izquierdo",
+        "este":   "lado derecho",
+    }
+
+    return traduccion.get(
+        str(lado).lower(),
+        str(lado)
+    )
+
+
+def describir_orientacion(orientacion):
+    """
+    Traduce la orientación técnica a una instrucción
+    comprensible para el usuario.
+    """
+
+    if not orientacion:
+        return None
+
+    traduccion = {
+        "normal":   "sin rotación (tal como viene la pieza)",
+        "rotado_90":  "girada 90° hacia la derecha",
+        "rotado_180": "girada 180° (al revés)",
+        "rotado_270": "girada 90° hacia la izquierda",
+        "horizontal": "en posición horizontal",
+        "vertical":   "en posición vertical",
+    }
+
+    return traduccion.get(
+        str(orientacion).lower(),
+        str(orientacion)
+    )
+
+
+def nombre_pieza(pieza):
+    """
+    Devuelve el nombre de la pieza si existe,
+    o un número de referencia amigable en caso contrario.
+    """
+
+    if pieza.get("nombre"):
+        return f'"{pieza["nombre"]}"'
+
+    return f'#{pieza["id_pieza"]}'
 
 
 # =========================================================
@@ -31,6 +129,9 @@ class PuzzleAssembler:
 
         # Piezas ya colocadas
         self.piezas_colocadas = set()
+
+        # Contador de pasos para el usuario
+        self.paso = 0
 
     # =====================================================
     # CERRAR DRIVER
@@ -159,98 +260,75 @@ class PuzzleAssembler:
             return None
 
     # =====================================================
-    # IMPRIMIR INFORMACION DE UNA PIEZA
+    # IMPRIMIR PIEZA BASE (punto de partida de seccion)
     # =====================================================
 
-    def imprimir_pieza_base(self, pieza):
+    def imprimir_pieza_base(self, pieza, es_primera=True):
 
-        print("\n====================================")
-        print("PIEZA BASE")
-        print("====================================")
+        fila   = pieza.get("fila")
+        columna = pieza.get("columna")
 
-        print(f"ID PIEZA: {pieza['id_pieza']}")
+        if es_primera:
+            print("\n┌─────────────────────────────────────┐")
+            print("│         PUNTO DE PARTIDA            │")
+            print("└─────────────────────────────────────┘")
+            print(
+                f"\nToma la pieza {nombre_pieza(pieza)} "
+                f"y colócala como punto de partida."
+            )
+        else:
+            print(
+                f"\nToma la pieza {nombre_pieza(pieza)} "
+                f"y colócala como punto de partida "
+                f"de este nuevo grupo."
+            )
 
-        if pieza.get("nombre"):
-            print(f"NOMBRE: {pieza['nombre']}")
-
-        print(
-            f"POSICION:"
-            f" fila={pieza.get('fila')},"
-            f" columna={pieza.get('columna')}"
-        )
-
-        print(
-            f"COORDENADAS RELATIVAS:"
-            f" x={pieza.get('x_relativo')},"
-            f" y={pieza.get('y_relativo')}"
-        )
+        if fila is not None and columna is not None:
+            posicion = describir_posicion(fila, columna)
+            print(f"Ubícala en la {posicion}.")
 
     # =====================================================
     # IMPRIMIR INSTRUCCION DE ENSAMBLAJE
     # =====================================================
 
-    def imprimir_instruccion(
-        self,
-        pieza_actual,
-        conexion
-    ):
+    def imprimir_instruccion(self, pieza_actual, conexion):
 
-        pieza_vecina = conexion["pieza"]
+        self.paso += 1
 
-        print("\n------------------------------------")
+        pieza_vecina  = conexion["pieza"]
+        lado_actual   = describir_lado(conexion["lado_actual"])
+        lado_vecino   = describir_lado(conexion["lado_vecino"])
+        orientacion   = describir_orientacion(conexion["orientacion"])
+        descripcion   = conexion["descripcion"]
+        requerido     = conexion["requerido"]
+
+        fila    = pieza_vecina.get("fila")
+        columna = pieza_vecina.get("columna")
+
+        print(f"\n── Paso {self.paso} " + "─" * 30)
 
         print(
-            f"Conectar pieza "
-            f"{pieza_vecina['id_pieza']}"
+            f"Toma la pieza {nombre_pieza(pieza_vecina)} "
+            f"y únela a la pieza {nombre_pieza(pieza_actual)}."
         )
 
         print(
-            f"con la pieza "
-            f"{pieza_actual['id_pieza']}"
+            f"  • Encaja el {lado_vecino} de la pieza nueva "
+            f"contra el {lado_actual} de la pieza anterior."
         )
 
-        print(
-            f"Lado actual: "
-            f"{conexion['lado_actual']}"
-        )
+        if orientacion:
+            print(f"  • Orientación: {orientacion}.")
 
-        print(
-            f"Lado vecino: "
-            f"{conexion['lado_vecino']}"
-        )
+        if descripcion:
+            print(f"  • {descripcion}.")
 
-        print(
-            f"Orientacion: "
-            f"{conexion['orientacion']}"
-        )
+        if fila is not None and columna is not None:
+            posicion = describir_posicion(fila, columna)
+            print(f"  • Esta pieza quedará en la {posicion}.")
 
-        print(
-            f"Tipo contacto: "
-            f"{conexion['tipo_contacto']}"
-        )
-
-        if conexion["descripcion"]:
-            print(
-                f"Descripcion: "
-                f"{conexion['descripcion']}"
-            )
-
-        print(
-            f"Posicion esperada:"
-            f" fila={pieza_vecina.get('fila')},"
-            f" columna={pieza_vecina.get('columna')}"
-        )
-
-        print(
-            f"Coordenadas relativas:"
-            f" x={pieza_vecina.get('x_relativo')},"
-            f" y={pieza_vecina.get('y_relativo')}"
-        )
-
-        if conexion["requerido"]:
-            print("Ensamblaje requerido: SI")
-        else:
-            print("Ensamblaje requerido: NO")
+        if requerido:
+            print("  ⚠ Este ensamblaje es obligatorio.")
 
     # =====================================================
     # ALGORITMO PRINCIPAL
@@ -258,9 +336,9 @@ class PuzzleAssembler:
 
     def armar_rompecabezas(self, id_rompecabezas):
 
-        print("\n====================================")
-        print("INICIO DEL ARMADO")
-        print("====================================")
+        print("\n╔═════════════════════════════════════╗")
+        print("║     INSTRUCCIONES DE ARMADO         ║")
+        print("╚═════════════════════════════════════╝")
 
         # -------------------------------------------------
         # Obtener primera pieza
@@ -273,7 +351,8 @@ class PuzzleAssembler:
         if not pieza_inicial:
 
             print(
-                "No existen piezas disponibles."
+                "\nNo hay piezas disponibles "
+                "para armar el rompecabezas."
             )
 
             return
@@ -291,7 +370,8 @@ class PuzzleAssembler:
         )
 
         self.imprimir_pieza_base(
-            pieza_inicial
+            pieza_inicial,
+            es_primera=True
         )
 
         # =================================================
@@ -328,16 +408,9 @@ class PuzzleAssembler:
 
                     if not pieza_vecina["presente"]:
 
-                        print("\n------------------------------------")
-
                         print(
-                            f"La pieza "
-                            f"{id_vecina} "
-                            f"NO esta disponible."
-                        )
-
-                        print(
-                            "Se omite este enlace."
+                            f"\n  ℹ La pieza {nombre_pieza(pieza_vecina)} "
+                            f"no está disponible — se omite."
                         )
 
                         continue
@@ -371,7 +444,7 @@ class PuzzleAssembler:
                     )
 
             # -------------------------------------------------
-            # BUSCAR NUEVA PIEZA BASE
+            # BUSCAR NUEVA PIEZA BASE (componente desconectada)
             # -------------------------------------------------
 
             nueva_base = self.buscar_nueva_base(
@@ -385,17 +458,19 @@ class PuzzleAssembler:
             if not nueva_base:
                 break
 
-            print("\n====================================")
-            print("NUEVA SECCION DEL ROMPECABEZAS")
-            print("====================================")
+            print("\n┌─────────────────────────────────────┐")
+            print("│         NUEVO GRUPO DE PIEZAS       │")
+            print("└─────────────────────────────────────┘")
 
             print(
-                "\nSe detecto una nueva componente "
-                "desconectada debido a piezas faltantes."
+                "\nAlgunas piezas faltantes separaron el "
+                "rompecabezas en grupos. Continúa con "
+                "este nuevo grupo de manera independiente."
             )
 
             self.imprimir_pieza_base(
-                nueva_base
+                nueva_base,
+                es_primera=False
             )
 
             self.piezas_colocadas.add(
@@ -410,13 +485,14 @@ class PuzzleAssembler:
         # FINALIZAR
         # =================================================
 
-        print("\n====================================")
-        print("ROMPECABEZAS COMPLETADO")
-        print("====================================")
+        print("\n╔═════════════════════════════════════╗")
+        print("║       ¡ROMPECABEZAS TERMINADO!      ║")
+        print("╚═════════════════════════════════════╝")
 
         print(
-            f"\nTotal de piezas colocadas: "
-            f"{len(self.piezas_colocadas)}"
+            f"\nSe colocaron "
+            f"{len(self.piezas_colocadas)} piezas en total. "
+            f"¡Listo!"
         )
 
 
