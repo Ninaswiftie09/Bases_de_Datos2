@@ -907,7 +907,7 @@ def cargar_zorro(db):
             "x_relativo": 1.0,
             "y_relativo": 0.0,
             "color_principal": "naranja",
-            "observaciones": "Cabeza del zorro bebé central con frente naranja brillante"
+            "observaciones": "Cabeza del zorro papá central con frente naranja brillante"
         },
         {
             "id_pieza": "zorro_001_pieza_5",
@@ -919,7 +919,7 @@ def cargar_zorro(db):
             "x_relativo": 1.0,
             "y_relativo": 1.0,
             "color_principal": "naranja rojizo",
-            "observaciones": "Cuerpo central del zorro bebé"
+            "observaciones": "Cuerpo central del zorro papá"
         },
         {
             "id_pieza": "zorro_001_pieza_6",
@@ -931,7 +931,7 @@ def cargar_zorro(db):
             "x_relativo": 2.0,
             "y_relativo": 1.0,
             "color_principal": "naranja rojizo",
-            "observaciones": "Cola central y parte lateral derecha del zorro bebé"
+            "observaciones": "Cola central y parte lateral derecha del zorro papá"
         },
         {
             "id_pieza": "zorro_001_pieza_7",
@@ -943,7 +943,7 @@ def cargar_zorro(db):
             "x_relativo": 1.0,
             "y_relativo": 2.0,
             "color_principal": "rosa claro",
-            "observaciones": "Base inferior central, panza rosada del zorro bebé"
+            "observaciones": "Final de la cola de la mamá y parte inferior del cuerpo del zorro papá"
         },
         {
             "id_pieza": "zorro_001_pieza_8",
@@ -993,7 +993,7 @@ def cargar_zorro(db):
             "id_pieza_destino": "zorro_001_pieza_4",
             "lado_destino": "izquierda",
             "orientacion": "derecha",
-            "descripcion": "La pieza 1 (mamá) encaja con la pieza 4 (cabeza bebé) por el lado derecho."
+            "descripcion": "La pieza 1 (mamá) encaja con la pieza 4 (cabeza papá) por el lado derecho."
         },
         {
             "id_pieza_origen": "zorro_001_pieza_1",
@@ -1009,7 +1009,7 @@ def cargar_zorro(db):
             "id_pieza_destino": "zorro_001_pieza_5",
             "lado_destino": "izquierda",
             "orientacion": "derecha",
-            "descripcion": "La pieza 2 (cuerpo mamá) encaja con la pieza 5 (cuerpo bebé) por el lado derecho."
+            "descripcion": "La pieza 2 (cuerpo mamá) encaja con la pieza 5 (cuerpo papá) por el lado derecho."
         },
         {
             "id_pieza_origen": "zorro_001_pieza_2",
@@ -1033,7 +1033,7 @@ def cargar_zorro(db):
             "id_pieza_destino": "zorro_001_pieza_5",
             "lado_destino": "arriba",
             "orientacion": "abajo",
-            "descripcion": "La pieza 4 (cabeza bebé) encaja con la pieza 5 (cuerpo bebé) por la parte inferior."
+            "descripcion": "La pieza 4 (cabeza papá) encaja con la pieza 5 (cuerpo papá) por la parte inferior."
         },
         {
             "id_pieza_origen": "zorro_001_pieza_4",
@@ -1041,7 +1041,7 @@ def cargar_zorro(db):
             "id_pieza_destino": "zorro_001_pieza_8",
             "lado_destino": "izquierda",
             "orientacion": "derecha",
-            "descripcion": "La pieza 4 (cabeza bebé central) encaja con la pieza 8 (cabeza zorro pequeño) por el lado derecho."
+            "descripcion": "La pieza 4 (cabeza papá) encaja con la pieza 8 (cabeza zorro pequeño) por el lado derecho."
         },
         {
             "id_pieza_origen": "zorro_001_pieza_5",
@@ -1049,7 +1049,7 @@ def cargar_zorro(db):
             "id_pieza_destino": "zorro_001_pieza_6",
             "lado_destino": "izquierda",
             "orientacion": "derecha",
-            "descripcion": "La pieza 5 (cuerpo bebé) encaja con la pieza 6 (cola central) por el lado derecho."
+            "descripcion": "La pieza 5 (cuerpo papá) encaja con la pieza 6 (cola central) por el lado derecho."
         },
         {
             "id_pieza_origen": "zorro_001_pieza_5",
@@ -1057,7 +1057,7 @@ def cargar_zorro(db):
             "id_pieza_destino": "zorro_001_pieza_7",
             "lado_destino": "arriba",
             "orientacion": "abajo",
-            "descripcion": "La pieza 5 (cuerpo bebé) encaja con la pieza 7 (base central) por la parte inferior."
+            "descripcion": "La pieza 5 (cuerpo papá) encaja con la pieza 7 (base central) por la parte inferior."
         },
         {
             "id_pieza_origen": "zorro_001_pieza_6",
