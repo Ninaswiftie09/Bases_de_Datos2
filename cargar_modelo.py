@@ -840,6 +840,322 @@ def cargar_bus(db):
 
         db.conectar_piezas_por_lados(**conexion) 
 
+
+
+def cargar_zorro(db):
+    id_rompecabezas = "zorro_001"
+
+    rompecabezas = {
+        "id_rompecabezas": id_rompecabezas,
+        "nombre": "Rompecabezas de la familia de zorros",
+        "marca": "Sin marca",
+        "material": "Madera",
+        "tematica": "Familia de zorros",
+        "tipo": "Infantil",
+        "descripcion": (
+            "Rompecabezas físico de madera con la imagen "
+            "de una familia de zorros compuesto por 10 piezas."
+        )
+    }
+
+    db.crear_rompecabezas(rompecabezas)
+
+    piezas = [
+        {
+            "id_pieza": "zorro_001_pieza_1",
+            "index": 1,
+            "nombre": "Pieza 1",
+            "presente": True,
+            "fila": 1,
+            "columna": 1,
+            "x_relativo": 0.0,
+            "y_relativo": 0.0,
+            "color_principal": "rojo oscuro",
+            "observaciones": "Cabeza y cuerpo superior de la zorra mamá, lado izquierdo"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_2",
+            "index": 2,
+            "nombre": "Pieza 2",
+            "presente": True,
+            "fila": 2,
+            "columna": 1,
+            "x_relativo": 0.0,
+            "y_relativo": 1.0,
+            "color_principal": "naranja rojizo",
+            "observaciones": "Cuerpo grande y cola enrollada de la zorra mamá"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_3",
+            "index": 3,
+            "nombre": "Pieza 3",
+            "presente": True,
+            "fila": 3,
+            "columna": 1,
+            "x_relativo": 0.0,
+            "y_relativo": 2.0,
+            "color_principal": "naranja rojizo",
+            "observaciones": "Base inferior izquierda, parte de la cola de la mamá"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_4",
+            "index": 4,
+            "nombre": "Pieza 4",
+            "presente": True,
+            "fila": 1,
+            "columna": 2,
+            "x_relativo": 1.0,
+            "y_relativo": 0.0,
+            "color_principal": "naranja",
+            "observaciones": "Cabeza del zorro bebé central con frente naranja brillante"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_5",
+            "index": 5,
+            "nombre": "Pieza 5",
+            "presente": True,
+            "fila": 2,
+            "columna": 2,
+            "x_relativo": 1.0,
+            "y_relativo": 1.0,
+            "color_principal": "naranja rojizo",
+            "observaciones": "Cuerpo central del zorro bebé"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_6",
+            "index": 6,
+            "nombre": "Pieza 6",
+            "presente": True,
+            "fila": 2,
+            "columna": 3,
+            "x_relativo": 2.0,
+            "y_relativo": 1.0,
+            "color_principal": "naranja rojizo",
+            "observaciones": "Cola central y parte lateral derecha del zorro bebé"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_7",
+            "index": 7,
+            "nombre": "Pieza 7",
+            "presente": True,
+            "fila": 3,
+            "columna": 2,
+            "x_relativo": 1.0,
+            "y_relativo": 2.0,
+            "color_principal": "rosa claro",
+            "observaciones": "Base inferior central, panza rosada del zorro bebé"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_8",
+            "index": 8,
+            "nombre": "Pieza 8",
+            "presente": True,
+            "fila": 1,
+            "columna": 3,
+            "x_relativo": 2.0,
+            "y_relativo": 0.0,
+            "color_principal": "rosado salmón",
+            "observaciones": "Cabeza y cara del zorro pequeño derecho"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_9",
+            "index": 9,
+            "nombre": "Pieza 9",
+            "presente": True,
+            "fila": 3,
+            "columna": 3,
+            "x_relativo": 2.0,
+            "y_relativo": 2.0,
+            "color_principal": "naranja salmón",
+            "observaciones": "Base inferior del zorro pequeño derecho"
+        },
+        {
+            "id_pieza": "zorro_001_pieza_10",
+            "index": 10,
+            "nombre": "Pieza 10",
+            "presente": True,
+            "fila": 2,
+            "columna": 4,
+            "x_relativo": 3.0,
+            "y_relativo": 1.0,
+            "color_principal": "naranja con blanco",
+            "observaciones": "Cola grande derecha del zorro pequeño con punta blanca"
+        }
+    ]
+
+    for pieza in piezas:
+        db.crear_pieza(id_rompecabezas, pieza)
+
+    conexiones = [
+        {
+            "id_pieza_origen": "zorro_001_pieza_1",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "zorro_001_pieza_4",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 1 (mamá) encaja con la pieza 4 (cabeza bebé) por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_1",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "zorro_001_pieza_2",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 1 (cabeza mamá) encaja con la pieza 2 (cuerpo mamá) por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_2",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "zorro_001_pieza_5",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 2 (cuerpo mamá) encaja con la pieza 5 (cuerpo bebé) por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_2",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "zorro_001_pieza_3",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 2 (cuerpo mamá) encaja con la pieza 3 (base izquierda) por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_3",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "zorro_001_pieza_7",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 3 (base izquierda) encaja con la pieza 7 (base central) por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_4",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "zorro_001_pieza_5",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 4 (cabeza bebé) encaja con la pieza 5 (cuerpo bebé) por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_4",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "zorro_001_pieza_8",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 4 (cabeza bebé central) encaja con la pieza 8 (cabeza zorro pequeño) por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_5",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "zorro_001_pieza_6",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 5 (cuerpo bebé) encaja con la pieza 6 (cola central) por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_5",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "zorro_001_pieza_7",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 5 (cuerpo bebé) encaja con la pieza 7 (base central) por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_6",
+            "lado_origen": "arriba",
+            "id_pieza_destino": "zorro_001_pieza_8",
+            "lado_destino": "abajo_izquierda",
+            "orientacion": "arriba",
+            "descripcion": "La pieza 6 (cola central) encaja con la pieza 8 (zorro pequeño) por la parte superior derecha."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_6",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "zorro_001_pieza_7",
+            "lado_destino": "derecha",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 6 (cola central) encaja con la pieza 7 (base central) por la parte inferior derecha."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_7",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "zorro_001_pieza_9",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 7 (base central) encaja con la pieza 9 (base derecha) por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_8",
+            "lado_origen": "abajo",
+            "id_pieza_destino": "zorro_001_pieza_9",
+            "lado_destino": "arriba",
+            "orientacion": "abajo",
+            "descripcion": "La pieza 8 (cabeza zorro pequeño) encaja con la pieza 9 (base derecha) por la parte inferior."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_8",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "zorro_001_pieza_10",
+            "lado_destino": "izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 8 (zorro pequeño) encaja con la pieza 10 (cola derecha) por el lado derecho."
+        },
+        {
+            "id_pieza_origen": "zorro_001_pieza_9",
+            "lado_origen": "derecha",
+            "id_pieza_destino": "zorro_001_pieza_10",
+            "lado_destino": "abajo_izquierda",
+            "orientacion": "derecha",
+            "descripcion": "La pieza 9 (base derecha) encaja con la pieza 10 (cola derecha) por el lado derecho inferior."
+        }
+    ]
+
+    enlaces_creados = set()
+
+    for conexion in conexiones:
+        enlace_origen = {
+            "id_enlace": construir_id_enlace(
+                conexion["id_pieza_origen"],
+                conexion["lado_origen"]
+            ),
+            "lado": conexion["lado_origen"],
+            "tipo": "conexion",
+            "forma": "irregular",
+            "descripcion": (
+                "Enlace "
+                + conexion["lado_origen"]
+                + " de "
+                + conexion["id_pieza_origen"]
+            )
+        }
+
+        enlace_destino = {
+            "id_enlace": construir_id_enlace(
+                conexion["id_pieza_destino"],
+                conexion["lado_destino"]
+            ),
+            "lado": conexion["lado_destino"],
+            "tipo": "conexion",
+            "forma": "irregular",
+            "descripcion": (
+                "Enlace "
+                + conexion["lado_destino"]
+                + " de "
+                + conexion["id_pieza_destino"]
+            )
+        }
+
+        if enlace_origen["id_enlace"] not in enlaces_creados:
+            db.crear_enlace(conexion["id_pieza_origen"], enlace_origen)
+            enlaces_creados.add(enlace_origen["id_enlace"])
+
+        if enlace_destino["id_enlace"] not in enlaces_creados:
+            db.crear_enlace(conexion["id_pieza_destino"], enlace_destino)
+            enlaces_creados.add(enlace_destino["id_enlace"])
+
+        db.conectar_piezas_por_lados(**conexion)
+
+
+
 if __name__ == "__main__":
     db = PuzzleDB()
 
@@ -848,13 +1164,17 @@ if __name__ == "__main__":
 
         db.limpiar_rompecabezas("oso_001")
         db.limpiar_rompecabezas("bus_001")
+        db.limpiar_rompecabezas("zorro_001")
 
         cargar_oso(db)
         cargar_bus(db)
+        cargar_zorro(db)
 
         db.mostrar_resumen_carga("oso_001")
         print()
         db.mostrar_resumen_carga("bus_001")
+        print()
+        db.mostrar_resumen_carga("zorro_001")
 
     finally:
         db.close()  
